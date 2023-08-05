@@ -178,7 +178,7 @@ const Register = ({ navigation }) => {
           <View style={styles.pushLink}>
             <Text style={styles.centerText}> Already have an Account? </Text>
             <TouchableOpacity onPress={() => navigation.navigate('Login')} paddingTop={10}>
-              <Text style={styles.registerText}>Login</Text>
+              <Text style={styles.registerText}>Sign In</Text>
             </TouchableOpacity>
           </View>
         </View>) : (<>
@@ -250,7 +250,7 @@ const Register = ({ navigation }) => {
                     />
                     {errors.phoneNo ?
                       <TouchableOpacity style={styles.iconWrapper} disabled={true}>
-                        <Text style={{ color: COLORS.primary,opacity:0.3 }}>Verify</Text>
+                        <Text style={{ color: COLORS.lighticon}}>Verify</Text>
                       </TouchableOpacity>
                       :
                       <TouchableOpacity style={styles.iconWrapper} onPress={handleVerifyPhoneNo}>
@@ -267,7 +267,7 @@ const Register = ({ navigation }) => {
                   <View style={styles.inputWrapper}>
                     <TextInput
                       style={styles.input}
-                      placeholder="Enter your Email"
+                      placeholder="Enter your Email Address"
                       onChangeText={handleChange("email")}
                       onBlur={handleBlur("email")}
                       value={values.email}
@@ -277,7 +277,7 @@ const Register = ({ navigation }) => {
                     />
                     { errors.email ?
                       <TouchableOpacity style={styles.iconWrapper} disabled>
-                        <Text style={{ color: COLORS.primary,opacity:0.3 }}>Verify</Text>
+                        <Text style={{ color: COLORS.lighticon }}>Verify</Text>
                       </TouchableOpacity>
                       :
                       <TouchableOpacity style={styles.iconWrapper} onPress={handleVerifyEmail}>
@@ -299,8 +299,8 @@ const Register = ({ navigation }) => {
                     />
                     <TouchableOpacity style={styles.iconWrapper} onPress={() => setShowPassword(!showPassword)}>
                       {!showPassword ?
-                        <MaterialCommunityIcons name="eye-off" size={20} color={COLORS.primary} />
-                        : <MaterialCommunityIcons name="eye" size={20} color={COLORS.primary} />
+                        <MaterialCommunityIcons name="eye-off" size={20} color={COLORS.lighticon} />
+                        : <MaterialCommunityIcons name="eye" size={20} color={COLORS.lighticon} />
                       }
                     </TouchableOpacity>
                   </View>
@@ -317,8 +317,8 @@ const Register = ({ navigation }) => {
                     />
                     <TouchableOpacity style={styles.iconWrapper} onPress={() => setShowConfirmPassword(!showConfirmPassword)}>
                       {!showConfirmPassword ?
-                        <MaterialCommunityIcons name="eye-off" size={20} color={COLORS.primary} />
-                        : <MaterialCommunityIcons name="eye" size={20} color={COLORS.primary} />
+                        <MaterialCommunityIcons name="eye-off" size={20} color={COLORS.lighticon} />
+                        : <MaterialCommunityIcons name="eye" size={20} color={COLORS.lighticon} />
                       }
                     </TouchableOpacity>
                   </View>

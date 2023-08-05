@@ -2,10 +2,12 @@ const COLORS = {
   primary: "#4d4d4d",
   secondary: "#019ffe",
   white: "#fff",
+  lighticon :"#A4ADBD",
   otpBtn: {
     grey: "#8695b3",
     blue: "#0d2b68"
-  }
+  },
+
 };
 
 const FONT = {

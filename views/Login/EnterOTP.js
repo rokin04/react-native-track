@@ -11,22 +11,23 @@ import {
   ScrollView,
   TextInput,
 } from "react-native";
+import OtpInput from 'custom-react-native-otp-input'
 import { Stack } from "expo-router";
 import styles from "./forgotPassword.style";
 import { Logo } from "../../components";
 import { COLORS, SHADOWS, SIZES, IMAGES, FONT, ICONS } from '../../constants'
 
+const EnterOTP = ({ navigation }) => {
 
-const ForgetPassword = ({ navigation }) => {
-
-  const handelSubmit = () => {
-    navigation.navigate('EnterOTP')
-  }
+    const handelSubmit = () => {
+        navigation.navigate('ResetPassword')
+      }
 
   return (
     <SafeAreaView style={styles.container} alignItems={"center"}>
 
-    <Stack.Screen />
+    <Stack.Screen 
+    />
 
       <ScrollView
         contentContainerStyle={{ flexGrow: 1, alignItems: "center"  , justifyContent:'space-evenly' }}
@@ -37,19 +38,20 @@ const ForgetPassword = ({ navigation }) => {
       
       <View style={styles.mainContainer} >
         <View style={styles.subContainer}>
-          <Image style={styles.forgotPasswordImage} source={IMAGES.FPI} /> 
-          <Text style={styles.heading} >Forgot Password?</Text>
-          <Text style={styles.para} >Don't worry it happens. Please enter the address associated withyour account</Text>
+          <Image style={styles.forgotPasswordImage} source={IMAGES.Eotp} /> 
+          <Text style={styles.para} >A four digit code has been sent to your associated email address</Text>
+          <OtpInput
+        numberOfDigits={5}
+        inputShape={'box_with_border_radius'}
+        secureEntry
+      />
+      <TouchableOpacity  >
+        <Text style={styles.resendOTP}>Resend OTP</Text>
+      </TouchableOpacity>
         </View>
 
         <View style={styles.subContainer} > 
-          <TextInput 
-          placeholder="Enter your email id"
-          style={styles.input}
-          />
-          <TouchableOpacity 
-          onPress={handelSubmit}
-          style={styles.submitBtn} >
+          <TouchableOpacity style={styles.submitBtn} onPress={handelSubmit} >
             <Text style={styles.sunmitBtnText}>Submit</Text>
           </TouchableOpacity>
         </View>
@@ -71,4 +73,4 @@ const ForgetPassword = ({ navigation }) => {
 
 
 
-export default ForgetPassword;
+export default EnterOTP;
