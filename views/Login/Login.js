@@ -3,7 +3,7 @@ import { View, Text, Image, SafeAreaView, TouchableOpacity, StyleSheet, Dimensio
 import { COLORS, SHADOWS, SIZES, IMAGES, FONT, ICONS } from '../../constants';
 import { DropDownCustom, Logo } from '../../components';
 import { TextInput } from 'react-native';
-import { Formik } from 'formik';
+import { Formik} from 'formik';
 import { object, string } from 'yup';
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { HOST } from '../../utils/Host-URL';
@@ -105,104 +105,106 @@ const Login = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container} alignItems={"center"}>
-          <ScrollView contentContainerStyle={{ flexGrow: 1, alignItems: "center" }} overScrollMode={Platform.OS === 'android'? "never":"auto"}>
-      <Logo flex={0} marginTop={10} />
-      <View style={styles.textContainer}>
-        <Text style={styles.textHeading}>Hey, Hello <Text style={styles.handEmoji}>&#128075;</Text> </Text>
-        <Text style={styles.text}>Enter the information you entered while registering</Text>
-      </View>
-      <View style={styles.roleContainer}>
-        {roleData.length > 0 && (
-          <DropDownCustom
-            selectedValue={selectedRole}
-            onValueChange={(itemValue) => setSelectedRole(itemValue)}
-            data={roleData}
-            disabled={roleData.length == 0}
-            width={"85%"}
-                      backgroundColor={COLORS.secondary}
-          />
-        )}
-      </View>
-      <Formik
-        initialValues={INITIAL_FORM_STATE}
-        validationSchema={FORM_VALIDATION}
-        onSubmit={(values) => handleSubmit(values)}
-      >
-        {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
-          <View style={styles.inputContainer}>
+      <ScrollView contentContainerStyle={{ flexGrow: 1, alignItems: "center" }} overScrollMode={Platform.OS === 'android' ? "never" : "auto"}>
+        <Logo flex={0} marginTop={10} />
+        <View style={styles.textContainer}>
+          <Text style={styles.textHeading}>Hey, Hello <Text style={styles.handEmoji}>&#128075;</Text> </Text>
+          <Text style={styles.text}>Enter the information you entered while registering</Text>
+        </View>
+        <View style={styles.roleContainer}>
+          {roleData.length > 0 && (
+            <DropDownCustom
+              selectedValue={selectedRole}
+              onValueChange={(itemValue) => setSelectedRole(itemValue)}
+              data={roleData}
+              disabled={roleData.length == 0}
+              width={"85%"}
+              backgroundColor={COLORS.secondary}
+            />
+          )}
+        </View>
+        <Formik
+          initialValues={INITIAL_FORM_STATE}
+          validationSchema={FORM_VALIDATION}
+          onSubmit={(values) => handleSubmit(values)}
+        >
+          {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
+            <View style={styles.inputContainer}>
               <View style={styles.inputWrapper}>
-              <TextInput
-                style={styles.input}
-                placeholder="Enter Your Email"
-                onChangeText={handleChange("email")}
-                onBlur={handleBlur("email")}
-                value={values.email}
-                keyboardType="email-address"
-                paddingRight={50}
-              />
-              <View style={styles.iconWrapper}>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Enter Your Email"
+                  onChangeText={handleChange("email")}
+                  onBlur={handleBlur("email")}
+                  value={values.email}
+                  keyboardType="email-address"
+                  paddingRight={50}
+                />
+                <View style={styles.iconWrapper}>
                   <MaterialCommunityIcons name="account" size={24} color={COLORS.lighticon} />
+                </View>
               </View>
-            </View>
-            {touched.email && errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
-            <View style={styles.inputWrapper}>
-              <TextInput
-                style={styles.input}
-                placeholder="Password"
-                onChangeText={handleChange("password")}
-                onBlur={handleBlur("password")}
-                value={values.password}
-                secureTextEntry={!showPassword}
-                paddingRight={50}
-              />
-              <TouchableOpacity style={styles.iconWrapper} onPress={() => setShowPassword(!showPassword)}>
-                {!showPassword ?
-                      <MaterialCommunityIcons name="eye-off" size={20} color={COLORS.lighticon} />
-                  : <MaterialCommunityIcons name="eye" size={20} color={COLORS.lighticon} />
-                }
+              {touched.email && errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
+              <View style={styles.inputWrapper}>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Password"
+                  onChangeText={handleChange("password")}
+                  onBlur={handleBlur("password")}
+                  value={values.password}
+                  secureTextEntry={!showPassword}
+                  paddingRight={50}
+                />
+                <TouchableOpacity style={styles.iconWrapper} onPress={() => setShowPassword(!showPassword)}>
+                  {!showPassword ?
+                    <MaterialCommunityIcons name="eye-off" size={20} color={COLORS.lighticon} />
+                    : <MaterialCommunityIcons name="eye" size={20} color={COLORS.lighticon} />
+                  }
+                </TouchableOpacity>
+              </View>
+              {touched.password && errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
+              <View style={styles.forgotContainer} paddingHorizontal={5}>
+                <TouchableOpacity onPress={() => setSelection(!isSelected)} style={styles.boxContainer}>
+                  <View style={{ alignItems: "center", justifyContent: "center" }}>
+                    {isSelected ? (
+                      <MaterialCommunityIcons name="checkbox-marked" size={20} color={COLORS.secondary} />
+                    ) : (
+                      <MaterialCommunityIcons name="checkbox-blank-outline" size={20} color={COLORS.primary} />
+                    )}
+                  </View>
+                  <Text style={styles.label} paddingLeft={5}>Remember me</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.boxContainer} onPress={() => navigation.navigate('Forgot')}>
+                  <View>
+                    <Text style={styles.label}>Forgot password?</Text>
+                  </View>
+                </TouchableOpacity>
+              </View>
+              <TouchableOpacity style={styles.loginButton} onPress={handleSubmit} title="Submit">
+                <Text style={styles.loginButtonText}>Login</Text>
               </TouchableOpacity>
-            </View>
-            {touched.password && errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
-            <View style={styles.forgotContainer} paddingHorizontal={5}>
-              <TouchableOpacity onPress={() => setSelection(!isSelected)} style={styles.boxContainer}>
-                <View style={{alignItems:"center",justifyContent:"center"}}>
-                  {isSelected ? (
-                    <MaterialCommunityIcons name="checkbox-marked" size={20} color={COLORS.secondary} />
-                  ) : (
-                     <MaterialCommunityIcons name="checkbox-blank-outline" size={20} color={COLORS.primary} />
-                  )}
-                </View>
-                <Text style={styles.label} paddingLeft={5}>Remember me</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.boxContainer} onPress={() => navigation.navigate('Forgot')}>
-                <View>
-                  <Text style={styles.label} >Forgot password?</Text>
-                </View>
-              </TouchableOpacity>
-            </View>
-            <TouchableOpacity style={styles.loginButton} onPress={handleSubmit} title="Submit">
-              <Text style={styles.loginButtonText}>Login</Text>
-            </TouchableOpacity>
-          </View>)}
-      </Formik>
-      <View style={styles.lineContainer}>
-        <View style={styles.line}></View>
-        <Text style={styles.orText}>or</Text>
-        <View style={styles.line}></View>
-      </View>
-      <View style={styles.appSigninContainer}>
-        {appIcons.map((icon, index) => (
-          <Image key={index} source={icon} style={styles.appIcon} />
-        ))}
-      </View>
-      <View style={styles.pushLink}>
-        <Text style={styles.centerText}> Don't have Account? </Text>
-        <TouchableOpacity onPress={() => navigation.navigate('Register')} paddingTop={10}>
-          <Text style={styles.registerText}>Register</Text>
-        </TouchableOpacity>
-      </View>
+            </View>)}
+        </Formik>
+        <View style={styles.lineContainer}>
+          <View style={styles.line}></View>
+          <Text style={styles.orText}>or</Text>
+          <View style={styles.line}></View>
+        </View>
+        <View style={styles.appSigninContainer}>
+          {appIcons.map((icon, index) => (
+            <Image key={index} source={icon} style={styles.appIcon} />
+          ))}
+        </View>
+        <View style={styles.pushLink}>
+          <Text style={styles.centerText}> Don't have Account? </Text>
+          <TouchableOpacity onPress={() => {
+            navigation.navigate('Register');
+          }} paddingTop={10}>
+            <Text style={styles.registerText}>Register</Text>
+          </TouchableOpacity>
+        </View>
       </ScrollView>
-        </SafeAreaView>
+    </SafeAreaView>
   );
 };
 

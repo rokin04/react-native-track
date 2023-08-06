@@ -33,7 +33,6 @@ const DropDownCustom = ({ selectedValue, onValueChange, data, disabled,width,bac
 const styles = StyleSheet.create({
   container:(width)=>( {
     width: width,
-    
   }),
   dropdownContainer:(backgroundColor)=> ({
     width: '100%',

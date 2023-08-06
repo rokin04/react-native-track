@@ -3,12 +3,22 @@ import { Modal, StyleSheet, Text, TextInput, TouchableOpacity, View } from "reac
 import { Feather } from "@expo/vector-icons";
 import { COLORS, SIZES } from "../../constants";
 import { HOST } from "../../utils/Host-URL";
+import { Alert } from 'react-native';
 
-const OtpModal = ({ isOtpModalOpen, setIsOtpModalOpen, otpSelectedOption, otpSelectedValue }) => {
-    const [timer, setTimer] = useState(6);
+const OtpModal = ({
+    isOtpModalOpen,
+    setIsOtpModalOpen,
+    otpSelectedOption,
+    otpSelectedValue,
+    setVerificationStatus,
+    navigation
+}) => {
+    const [timer, setTimer] = useState(20);
     const [otp, setOtp] = useState('');
     const [error, setError] = useState('')
     const [otpRequestedAgain, setOtpRequestedAgain] = useState(false);
+    const [isOtpValid, setIsOtpValid] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
     const otpTime = (s) => {
         const minutes = Math.floor(s / 60);
@@ -18,6 +28,8 @@ const OtpModal = ({ isOtpModalOpen, setIsOtpModalOpen, otpSelectedOption, otpSel
 
     const handleClose = () => {
         setIsOtpModalOpen(false);
+        setError('')
+        setOtp('');
     }
 
     useEffect(() => {
@@ -25,7 +37,7 @@ const OtpModal = ({ isOtpModalOpen, setIsOtpModalOpen, otpSelectedOption, otpSel
             setTimer((prev) => (prev > 0 ? prev - 1 : 0));
         }, 1000);
         return () => clearInterval(interval);
-    }, [setOtpRequestedAgain,timer]);
+    }, [timer]);
 
     useEffect(() => {
         if (timer === 0) {
@@ -35,6 +47,7 @@ const OtpModal = ({ isOtpModalOpen, setIsOtpModalOpen, otpSelectedOption, otpSel
 
 
     const handleOnOtpVerify = (otp, email) => {
+        setIsLoading(true);
         const myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
         const requestOptions = {
@@ -48,33 +61,34 @@ const OtpModal = ({ isOtpModalOpen, setIsOtpModalOpen, otpSelectedOption, otpSel
         fetch(`${HOST}:8081/api/signup/emailverify`, requestOptions)
             .then((response) => response.json())
             .then((result) => {
+                setIsLoading(false);
                 if (result.responseStatus === 200) {
-                    // navigate("/login");
                     setError("Success");
-                    setIsOtpModalOpen(false)
+                    Alert.alert("Success!", result.responseMessage, [{
+                        text: "OK", onPress: () => {
+                            setVerificationStatus(true);
+                            setIsOtpModalOpen(false);
+                            navigation.navigate('Login')
+                        }
+                    }]);
                 } else {
-                    // toast.error("Otp verification Failed");
                     setError("Oops, wrong OTP. Please try again");
                     setTimer(0);
+                    setIsOtpValid(false)
                 }
             })
-            .catch((error) => {
-                console.log("error", error);
-                setError("Oops, something went wrong. Please try again later");
-                setTimer(0);
-            });
-
+            .catch((error) => console.log("error", error));
     };
 
-   const handleOTPagain = () => {
-    if(timer==0){
-    setTimer(5);
-    setOtpRequestedAgain(true);
-    setError('')
-    setOtp('');
-
-    }
-};
+    const handleOTPagain = () => {
+        if (timer === 0) {
+            setTimer(20);
+            setOtpRequestedAgain(true);
+            setError('')
+            setOtp('');
+            setIsOtpValid(false)
+        }
+    };
     return (
         <>
             {isOtpModalOpen && (
@@ -89,31 +103,51 @@ const OtpModal = ({ isOtpModalOpen, setIsOtpModalOpen, otpSelectedOption, otpSel
                             <Text style={[styles.text, styles.userText]}>{otpSelectedValue}</Text>
                             <TextInput
                                 style={styles.modalinput}
-                                onChangeText={setOtp}
+                                onChangeText={text => {
+                                    if (text.length <= 6) {
+                                        setOtp(text);
+                                        setIsOtpValid(text.length === 6);
+                                    }
+                                }}
                                 value={otp}
                                 keyboardType="numeric"
+                                maxLength={6}
                             />
-                            {error && <Text style={styles.errorText}>{error}</Text>}
+
+                            {error && (
+                                <Text style={[styles.errorText, error === "Success" ? styles.successErrorText : null]}>
+                                    {error}
+                                </Text>
+                            )}
                             <View style={styles.clickHereContainer}>
                                 <Text style={styles.text}>
                                     Didn't receive OTP?{" "}
                                 </Text>
                                 {
-                                timer !== 0?<TouchableOpacity disabled>
-                                    <Text style={[styles.text,styles.timerColor]}>
+                                    timer !== 0 ? <TouchableOpacity disabled>
+                                        <Text style={[styles.text, styles.timerColor]}>
                                             {otpTime(timer)}
-                                    </Text></TouchableOpacity>:(
-                                    <TouchableOpacity onPress={handleOTPagain}>
-                                    <Text style={[styles.text,styles.timerColor]}>
-                                            Click here
-                                    </Text></TouchableOpacity>)
+                                        </Text></TouchableOpacity> : (
+                                        <TouchableOpacity onPress={handleOTPagain}>
+                                            <Text style={[styles.text, styles.timerColor]}>
+                                                Click here
+                                            </Text></TouchableOpacity>)
                                 }
                             </View>
-
                             <View style={{ width: "100%" }}>
-                                <TouchableOpacity style={styles.optBtn} onPress={() => handleOnOtpVerify(otp, otpSelectedValue)}>
-                                    <Text style={styles.optBtnText}>Enter OTP</Text>
+
+                                <TouchableOpacity
+                                    style={[styles.optBtn, !isOtpValid && styles.disabledOptBtn, isLoading && styles.loadingOptBtn]}
+                                    onPress={() => isOtpValid && handleOnOtpVerify(otp, otpSelectedValue)}
+                                    disabled={!isOtpValid || isLoading}
+                                >
+                                    {isLoading ? (
+                                        <Text style={styles.optBtnText}>Loading...</Text>
+                                    ) : (
+                                        <Text style={styles.optBtnText}>Enter OTP</Text>
+                                    )}
                                 </TouchableOpacity>
+
                             </View>
                         </View>
                     </View>
@@ -136,7 +170,7 @@ const styles = StyleSheet.create({
         backgroundColor: "white",
         paddingHorizontal: "8%",
         paddingTop: "8%",
-        paddingBottom:"5%",
+        paddingBottom: "5%",
         alignItems: "center",
         borderRadius: 3,
         width: "85%",
@@ -146,14 +180,14 @@ const styles = StyleSheet.create({
         marginTop: 20,
         color: COLORS.primary,
         height: 40,
-        width:'60%',
+        width: '60%',
         borderBottomColor: COLORS.primary,
         borderWidth: 0,
-        borderBottomWidth:1,
-        borderStyle:"dotted",
-        fontSize:SIZES.medium,
-        textAlign:"center",
-        letterSpacing:10
+        borderBottomWidth: 1,
+        borderStyle: "dotted",
+        fontSize: SIZES.medium,
+        textAlign: "center",
+        letterSpacing: 10
     },
     clickHereContainer: {
         flexDirection: "row",
@@ -171,8 +205,8 @@ const styles = StyleSheet.create({
         color: COLORS.primary,
         lineHeight: 20,
     },
-    timerColor:{
-    color: COLORS.otpBtn.blue 
+    timerColor: {
+        color: COLORS.otpBtn.blue
     },
     errorText: {
         color: "red",
@@ -181,6 +215,9 @@ const styles = StyleSheet.create({
         textAlign: "center",
         lineHeight: 24,
         width: '85%',
+    },
+    successErrorText: {
+        color: "green",
     },
     userText: {
         marginTop: 5,
@@ -203,5 +240,8 @@ const styles = StyleSheet.create({
         color: COLORS.white,
         fontSize: SIZES.medium,
         textAlign: 'center',
+    },
+    disabledOptBtn: {
+        backgroundColor: "#8695b3"
     },
 });
