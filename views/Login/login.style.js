@@ -61,6 +61,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 8
   },
+  verifyTick:{
+  display:"flex",
+  alignItems:"center",
+  flexDirection:"row",
+  },
+  verifyText: {
+    color: COLORS.verify,
+    paddingLeft: 5, 
+  },
   input: {
     height: 50,
     borderWidth: 1,
@@ -153,7 +162,7 @@ const styles = StyleSheet.create({
     color: COLORS.secondary,
   },
   lineColor: {
-    opacity: 0.4
+    opacity: 0.3,
   },
   appSigninContainer: {
     flexDirection: 'row',
