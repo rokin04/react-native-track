@@ -15,18 +15,17 @@ import { Stack } from "expo-router";
 import styles from "./forgotPassword.style";
 import { Logo } from "../../components";
 import { COLORS, SHADOWS, SIZES, IMAGES, FONT, ICONS } from '../../constants'
-
-
-const ForgetPassword = ({ navigation }) => {
+const ResetPassword = ({ navigation }) => {
 
   const handelSubmit = () => {
-    navigation.navigate('EnterOTP')
+    navigation.navigate('Login')
   }
 
   return (
     <SafeAreaView style={styles.container} alignItems={"center"}>
 
-    <Stack.Screen />
+    <Stack.Screen 
+    />
 
       <ScrollView
         contentContainerStyle={{ flexGrow: 1, alignItems: "center"  , justifyContent:'space-evenly' }}
@@ -37,16 +36,23 @@ const ForgetPassword = ({ navigation }) => {
       
       <View style={styles.mainContainer} >
         <View style={styles.subContainer}>
-          <Image style={styles.forgotPasswordImage} source={IMAGES.FPI} /> 
-          <Text style={styles.heading} >Forgot Password?</Text>
-          <Text style={styles.para} >Don't worry it happens. Please enter the address associated withyour account</Text>
+          <Image style={styles.resetPasswordImage} source={IMAGES.ResetPassword} /> 
+          <Text style={styles.heading} >Reset Password</Text>
         </View>
 
         <View style={styles.subContainer} > 
           <TextInput 
-          placeholder="Enter your email id"
+          placeholder="New Password"
           style={styles.input}
           />
+          <TextInput 
+          placeholder="Confirm New Password"
+          style={styles.input}
+          />
+      <View style={styles.resetHint} >
+          <Text>Must be at least 8 characters </Text>
+          <Text>Both Passwords must match </Text>
+      </View>
           <TouchableOpacity 
           onPress={handelSubmit}
           style={styles.submitBtn} >
@@ -54,6 +60,7 @@ const ForgetPassword = ({ navigation }) => {
           </TouchableOpacity>
         </View>
       </View>
+
 
         <View style={styles.pushLink}>
           <Text style={styles.centerText}> Don't have Account? </Text>
@@ -71,4 +78,4 @@ const ForgetPassword = ({ navigation }) => {
 
 
 
-export default ForgetPassword;
+export default ResetPassword;

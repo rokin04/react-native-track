@@ -8,6 +8,7 @@ import { object, string } from 'yup';
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { HOST } from '../../utils/Host-URL';
 import styles from './login.style';
+
 const Login = ({ navigation }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [isSelected, setSelection] = useState(false);
@@ -140,7 +141,7 @@ const Login = ({ navigation }) => {
                 paddingRight={50}
               />
               <View style={styles.iconWrapper}>
-                  <MaterialCommunityIcons name="account" size={24} color={COLORS.primary} />
+                  <MaterialCommunityIcons name="account" size={24} color={COLORS.lighticon} />
               </View>
             </View>
             {touched.email && errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
@@ -156,8 +157,8 @@ const Login = ({ navigation }) => {
               />
               <TouchableOpacity style={styles.iconWrapper} onPress={() => setShowPassword(!showPassword)}>
                 {!showPassword ?
-                      <MaterialCommunityIcons name="eye-off" size={20} color={COLORS.primary} />
-                  : <MaterialCommunityIcons name="eye" size={20} color={COLORS.primary} />
+                      <MaterialCommunityIcons name="eye-off" size={20} color={COLORS.lighticon} />
+                  : <MaterialCommunityIcons name="eye" size={20} color={COLORS.lighticon} />
                 }
               </TouchableOpacity>
             </View>

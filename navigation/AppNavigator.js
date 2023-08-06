@@ -6,6 +6,8 @@ import About from '../views/QuickTour/About';
 import { NavigationContainer } from '@react-navigation/native';
 import Register from '../views/Register/Register';
 import ForgetPassword from '../views/Login/ForgetPassword';
+import EnterOTP from '../views/Login/EnterOTP';
+import ResetPassword from '../views/Login/ResetPassword';
 
 const Stack = createStackNavigator();
 
@@ -18,6 +20,8 @@ function Routing() {
         <Stack.Screen name="Login" component={Login} />
         <Stack.Screen name="Register" component={Register} />
         <Stack.Screen name="Forgot" component={ForgetPassword} />
+        <Stack.Screen name="EnterOTP" component={EnterOTP} />
+        <Stack.Screen name="ResetPassword" component={ResetPassword} />
       </Stack.Navigator>
     </NavigationContainer>
   ); 

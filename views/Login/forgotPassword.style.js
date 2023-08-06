@@ -1,5 +1,6 @@
 import { Dimensions, StyleSheet } from 'react-native';
 import { COLORS, FONT, SIZES } from '../../constants'
+import { color } from 'react-native-reanimated';
 
 const styles = StyleSheet.create({
     container: {
@@ -7,6 +8,7 @@ const styles = StyleSheet.create({
       width: Dimensions.get("window").width,
       height: Dimensions.get("window").height,
       backgroundColor: COLORS.white,
+      justifyContent: 'space-between',
     },
     pushLink: {
       flexDirection: "row",
@@ -75,6 +77,21 @@ const styles = StyleSheet.create({
         width:'100%',
         resizeMode:'contain',
         transform: [{ scale: 1.2 }]
+      },
+      resendOTP:{
+        textAlign:'right',
+        color:COLORS.secondary,
+        fontSize:SIZES.medium,
+        textDecorationLine:'underline',
+        fontWeight:'bold'
+      },
+      resetPasswordImage:{
+        height:250,
+        width:'100%',
+        resizeMode:'contain',
+      },
+      resetHint:{
+        margin:10
       }
   });
 

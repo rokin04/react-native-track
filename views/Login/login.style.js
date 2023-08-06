@@ -96,17 +96,17 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     flexDirection: 'row',
     marginTop: 20,
-    paddingVertical:2,
+    paddingVertical: 2,
   },
   boxContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent:"center",
-    textAlign:"center"
+    justifyContent: "center",
+    textAlign: "center"
   },
   label: {
     color: COLORS.primary,
-    fontSize: SIZES.medium,    
+    fontSize: SIZES.medium,
   },
   iconcheck: {
     width: 15,
@@ -131,10 +131,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: "center",
     marginTop: 20,
+    paddingHorizontal: 20
   },
   line: {
     height: 1,
-    width: '30%',
+    width: '50%',
     backgroundColor: COLORS.primary,
     opacity: 0.3
   },
