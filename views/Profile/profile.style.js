@@ -11,24 +11,30 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     justifyContent: 'space-between',
   },
-  textContainer: {
-    marginTop: 20,
-    alignItems: 'flex-start',
+   inputContainer: {
     width: '100%',
-    justifyContent: "center"
+    alignItems: 'center',
+    justifyContent: "center",
   },
-  textHeading: {
+   inputWrapper: {
+    flexDirection: "row",
+    alignItems: "center",
+    width: '85%',
+    marginBottom: 10,
+    marginTop: 20,
+  },
+   input: {
+    height: 50,
+    borderWidth: 1,
+    borderRadius: 3,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    color: COLORS.primary,
     fontSize: SIZES.medium,
-    color: COLORS.primary,
-    textAlign: "left"
+    flex: 1,
+    width:"100%",
+    borderColor: "#dddddd",
   },
-  text: {
-    marginTop: 8,
-    fontSize: 14,
-    textAlign: "left",
-    color: COLORS.primary,
-    lineHeight: 20,
-  }
 });
 
 export default styles;

@@ -26,16 +26,14 @@ function ProfileTopTabs() {
         tabBarIndicatorStyle: {
           backgroundColor: "#FFBF13",
           height: 3,
-        }
-      }}
-      sceneContainerStyle={{ backgroundColor: "white" }}
-      tabBarOptions={{
+        },
         labelStyle: {
           textTransform: 'capitalize',
           fontWeight: 'bold',
           opacity: 0.8,
-        }
+          }
       }}
+      sceneContainerStyle={{ backgroundColor: "white" }}
     >
       <Tab.Screen name="Profile Setting" component={Profile} />
       <Tab.Screen name="Avatars" component={AvatarScreen}/>
