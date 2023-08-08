@@ -145,7 +145,8 @@ const Register = ({ navigation }) => {
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={{ flexGrow: 1, alignItems: "center" }} overScrollMode={Platform.OS === 'android' ? "never" : "auto"}>
         <Logo flex={0} marginTop={10} />
-        {!selectedRole ? (<View style={{ alignItems: "center", justifyContent: "center", flex: 1, width: '100%' }}>
+        {!selectedRole ? (
+        <View style={{ alignItems: "center", justifyContent: "center", flex: 1, width: '100%' }}>
           <View style={styles.textContainer}>
             <Text style={styles.textHeading}>Hey, Hello <Text style={styles.handEmoji}>&#128075;</Text> </Text>
             <Text style={styles.text}>

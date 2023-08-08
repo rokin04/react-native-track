@@ -56,7 +56,7 @@ const Login = ({ navigation }) => {
             console.log(result.message);
             Alert.alert("Success", result.message, [{
               text: "OK", onPress: () => {
-                navigation.navigate('About');
+                navigation.navigate('Profile');
               }
             }]);
             // dispatch({ type: reduxAction.SET_ROLEID, payload: result.roleId });
