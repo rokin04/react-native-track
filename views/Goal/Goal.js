@@ -16,6 +16,7 @@ import { useState } from "react";
 import Outcomes from "./Outcomes";
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import ShareGoal from "./ShareGoal";
+import Goalprogress from "./Goalprogress";
 
 const Goal = () => {
 
@@ -40,7 +41,7 @@ const Goal = () => {
     <Tab.Screen name="Goal Summary" component={Goalsum}  />
     <Tab.Screen name="Outcomes" component={Outcomes}/>
     <Tab.Screen name="Share Goal / Review" component={ShareGoal}/>
-    <Tab.Screen name="Goal Progress" component={Goalsum} />
+    <Tab.Screen name="Goal Progress" component={Goalprogress} />
   </Tab.Navigator>
   );
 };
