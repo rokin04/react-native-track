@@ -225,15 +225,6 @@ const ShareGoal = () => {
             <Text className="text-sm font-popMedium" style={{color:'#263238',fontSize:15}}>Reason to share</Text>
             <TextInput className="border p-3 text-lg rounded mb-2" style={{borderColor:'#D0D2D2'}} 
             placeholderTextColor={'#54585A'} placeholder='Write Reason' />
-            {/* <View className>
-            <Text className="text-sm font-popMedium mr-12" style={{color:'#263238',fontSize:15}}>Permissions</Text>
-            </View>
-            <View className="border rounded text-2xl font-popMedium " style={{borderColor:'#D0D2D2'}}>
-              <Picker style={{color:'#54585A'}}>
-                <Picker.Item label="Select" value="reactJs" />
-                <Picker.Item label="Unselect" value="reactJs Native" />
-              </Picker>
-            </View> */}
             <View>
             <TouchableOpacity
               onPress={() => {
