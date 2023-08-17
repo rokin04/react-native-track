@@ -30,12 +30,9 @@ const Register = ({ navigation }) => {
   const [roleData, setRoleData] = useState([]);
   const [isOtpModalOpen, setIsOtpModalOpen] = useState(false);
   const [otpby, setOtpby] = useState('');
-  const [verificationStatus, setVerificationStatus] = useState(false);
   const [otp, setOtp] = useState('');
   const pickerRef = useRef();
   const emailRef = useRef("");
-  console.log(emailRef.current)
-  console.log('clear')
   const phoneNoRef = useRef("");
 
   const handleOnCountryCodeChange = (itemValue) => {
@@ -98,17 +95,8 @@ const Register = ({ navigation }) => {
       .then((response) => response.json())
       .then((result) => {
         if (result.responseStatus === 200) {
-          if (!verificationStatus) {
-            Alert.alert("Success! Please Verify", result.responseMessage, [{
-              text: "OK", onPress: () => {
-                setOtpby('email');
-                setIsOtpModalOpen(true);
-              }
-            }]);
-          } else {
-            Alert.alert("Success! Please Login Now", result.responseMessage, [{ text: "OK", onPress: () => { } }]);
-            navigation.navigate('Login')
-          }
+          setIsOtpModalOpen(true);
+          Alert.alert("Success! Please Verify", result.responseMessage, [{ text: "OK", onPress: () => { } }]);
         } else {
           Alert.alert("Error", result.responseMessage, [{ text: "OK", onPress: () => { } }]);
         }
@@ -145,8 +133,7 @@ const Register = ({ navigation }) => {
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={{ flexGrow: 1, alignItems: "center" }} overScrollMode={Platform.OS === 'android' ? "never" : "auto"}>
         <Logo flex={0} marginTop={10} />
-        {!selectedRole ? (
-        <View style={{ alignItems: "center", justifyContent: "center", flex: 1, width: '100%' }}>
+        {!selectedRole ? (<View style={{ alignItems: "center", justifyContent: "center", flex: 1, width: '100%' }}>
           <View style={styles.textContainer}>
             <Text style={styles.textHeading}>Hey, Hello <Text style={styles.handEmoji}>&#128075;</Text> </Text>
             <Text style={styles.text}>
@@ -258,23 +245,16 @@ const Register = ({ navigation }) => {
                       onChangeText={handleChange("phoneNo")}
                       onBlur={handleBlur("phoneNo")}
                       value={values.phoneNo}
-                      paddingRight={verificationStatus ? 80 : 50}
+                      paddingRight={50}
                       ref={phoneNoRef}
                     />
-                    {!verificationStatus ? (errors.phoneNo ?
-                      <TouchableOpacity style={styles.iconWrapper} disabled={errors.phoneNo}>
-                        <Text style={{ color: COLORS.lighticon }}>Verify</Text>
+                    {errors.phoneNo ?
+                      <TouchableOpacity style={styles.iconWrapper} disabled={true}>
+                        <Text style={{ color: COLORS.lighticon}}>Verify</Text>
                       </TouchableOpacity>
                       :
-                      touched.phoneNo && !errors.phoneNo ? <TouchableOpacity style={styles.iconWrapper}>
+                      <TouchableOpacity style={styles.iconWrapper} onPress={handleVerifyPhoneNo}>
                         <Text style={{ color: COLORS.secondary }}>Verify</Text>
-                      </TouchableOpacity> : <TouchableOpacity style={styles.iconWrapper} disabled={errors.phoneNo}>
-                        <Text style={{ color: COLORS.lighticon }}>Verify</Text>
-                      </TouchableOpacity>) :
-                      <TouchableOpacity style={[styles.iconWrapper, styles.verifyTick]}>
-                        <MaterialCommunityIcons name="check-decagram" size={20} color={COLORS.verify} />
-                        <Text style={styles.verifyText}>
-                          Verify</Text>
                       </TouchableOpacity>
                     }
                   </View>
@@ -288,42 +268,25 @@ const Register = ({ navigation }) => {
                     <TextInput
                       style={styles.input}
                       placeholder="Enter your Email Address"
-                      onChangeText={(value) => {
-                        handleChange("email")(value);
-                        emailRef.current = value;
-                      }}
+                      onChangeText={handleChange("email")}
                       onBlur={handleBlur("email")}
                       value={values.email}
                       keyboardType="email-address"
                       ref={emailRef}
-                      paddingRight={verificationStatus ? 80 : 50}
+                      paddingRight={50}
                     />
-                    {!verificationStatus ? (errors.email ?
-                      <TouchableOpacity style={styles.iconWrapper} disabled={errors.email}>
+                    { errors.email ?
+                      <TouchableOpacity style={styles.iconWrapper} disabled>
                         <Text style={{ color: COLORS.lighticon }}>Verify</Text>
                       </TouchableOpacity>
                       :
-                      touched.email && !errors.email ? <TouchableOpacity style={styles.iconWrapper}>
+                      <TouchableOpacity style={styles.iconWrapper} onPress={handleVerifyEmail}>
                         <Text style={{ color: COLORS.secondary }}>Verify</Text>
-                      </TouchableOpacity> : <TouchableOpacity style={styles.iconWrapper} disabled={errors.email}>
-                        <Text style={{ color: COLORS.lighticon }}>Verify</Text>
-                      </TouchableOpacity>) :
-                      <TouchableOpacity style={[styles.iconWrapper, styles.verifyTick]}>
-                        <MaterialCommunityIcons name="check-decagram" size={20} color={COLORS.verify} />
-                        <Text style={styles.verifyText}>
-                          Verify</Text>
                       </TouchableOpacity>
                     }
                   </View>
                   {touched.email && errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
-                  <OtpModal
-                    isOtpModalOpen={isOtpModalOpen}
-                    setIsOtpModalOpen={setIsOtpModalOpen}
-                    otpSelectedOption={otpby == 'email' ? 'Email' : 'Mobile'}
-                    otpSelectedValue={otpby == 'email' ? values.email : `+${countryCode} ${values.phoneNo}`}
-                    setVerificationStatus={setVerificationStatus}
-                    navigation={navigation}
-                  />
+
                   <View style={styles.inputWrapper}>
                     <TextInput
                       style={styles.input}
@@ -384,8 +347,13 @@ const Register = ({ navigation }) => {
             </TouchableOpacity>
           </View>
         </>)}
-
-
+        <OtpModal
+          isOtpModalOpen={isOtpModalOpen}
+          setIsOtpModalOpen={setIsOtpModalOpen}
+          email={`darsh@gmail.com`}
+          otpSelectedOption={otpby == 'email' ? 'Email' : 'Mobile'}
+          otpSelectedValue={otpby == 'email' ? `darshan@gmail.com` : `+${countryCode} xxx-xxx-xxxx`}
+        />
       </ScrollView>
     </SafeAreaView>
   );

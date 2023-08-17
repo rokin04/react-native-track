@@ -7,7 +7,7 @@ const COLORS = {
     grey: "#8695b3",
     blue: "#0d2b68"
   },
-  verify:"#00B278",
+
 };
 
 const FONT = {
