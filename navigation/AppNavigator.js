@@ -48,12 +48,12 @@ function Routing() {
       <Stack.Navigator style={{ backgroundColor: "white" }}>
         {/* <Stack.Screen name="Home" component={Home} options={{ headerShown: false }} /> */}
         {/* <Stack.Screen name="About" component={About} /> */}
-        {/* <Stack.Screen name="Login" component={Login} /> */}
+        <Stack.Screen name="Login" component={Login} />
         {/* <Stack.Screen name="Register" component={Register} /> */}
         {/* <Stack.Screen name="Forgot" component={ForgetPassword} /> */}
         {/* <Stack.Screen name="EnterOTP" component={EnterOTP} /> */}
         {/* <Stack.Screen name="ResetPassword" component={ResetPassword} /> */}
-        <Stack.Screen name="Profile" component={ProfileTopTabs} options={{ headerStyle: { backgroundColor: "#019FFE", }, headerTintColor: "white", }} />
+        {/* <Stack.Screen name="Profile" component={ProfileTopTabs} options={{ headerStyle: { backgroundColor: "#019FFE", }, headerTintColor: "white", }} /> */}
 
 
       </Stack.Navigator>
