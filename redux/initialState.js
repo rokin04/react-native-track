@@ -1,14 +1,14 @@
 export const initialState = {
-  settingGroupGoal: [{ groupName: null, name: null, email: null }],
+  settingGroupGoal: [{ groupName: '', name: '', email: '' }],
   userDetails: [],
   userEmail: null,
-  influencerGoalAreaData: {},
+  influencerGoalAreaData: {}, 
   achieverGoalAreaData: {},
   goalId: null,
   roleId: null,
   sharegoalId: null,
   goalSummaryData: {
-    dummyData: "",
+    shareGoalTo: "",
     goalPriority: "",
     goalTitle: "",
     goalArea: "",
@@ -37,5 +37,8 @@ export const initialState = {
   ndisAgreementSigned: false,
   ndisTCSigned: false,
   showConflictOfInterest: false,
-  showConfirmationDialog: {show: false, text: '', onOkClick: ''}
+  showConfirmationDialog: {show: false, text: '', onOkClick: ''},
+
+  abiExample:""
+
 };

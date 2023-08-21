@@ -62,6 +62,8 @@ const reducer = (state = initialState, action) => {
       return { ...state, showConfirmationDialog: action.payload };
     case reduxAction.SET_ROLEID:
       return { ...state, roleId: action.payload };
+
+      case reduxAction.ABI_EXAMPLE_ACTION : return { ...state , abiExample : action.payload }
     default:
       return { ...state };
   }

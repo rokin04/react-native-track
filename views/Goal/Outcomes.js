@@ -243,15 +243,16 @@ const Outcomes = () => {
           </Modal>
           </Portal>
         </View>
-        <TouchableOpacity
+       <TouchableOpacity
           onPress={() => {
             setNaxtPage(false);
           }}
+          
           className="w-1/4  p-2 bg-blue-400 ml-auto mt-3 rounded-md">
           <Text className="text-lg text-center font-popMedium text-white font-semibold">
             Save
           </Text>
-        </TouchableOpacity>
+        </TouchableOpacity> 
     </SafeAreaView>
     </PaperProvider>
   )
