@@ -6,6 +6,8 @@ import {
   StyleSheet,
   SafeAreaView,
   TouchableOpacity,
+  Alert,
+  ScrollView,
 } from "react-native";
 import { COLORS, SHADOWS, SIZES, IMAGES, FONT, ICONS } from "../../constants";
 import { TextInput } from "react-native";
@@ -94,6 +96,13 @@ const Goalsum = () => {
       text1: 'Goal-Summary saved successfully!',
     });
   }
+  const showErrorToast = () => {
+      Toast.show({
+        type: 'tomatoToast',
+        props: { text: 'Bad Request!' }
+      });
+
+  }
 
   const handleOnSetGoalTitle = (e) => {
     dispatch({
@@ -178,10 +187,50 @@ const Goalsum = () => {
     });
   };
 
+  const handleOnSave = (next) => () => {
+    console.log('triggered');
+    var myHeaders = new Headers();
+    myHeaders.append("Content-Type", "application/json");
+    var requestOptions = {
+      method: "POST",
+      headers: myHeaders,
+      body: JSON.stringify({
+        title: goalTitle,
+        priority: goalPriority,
+        area: '',
+        area_custom: enterGoalArea,
+        goal_for: goalFor,
+        forSomeoneElse: GoalFordata,
+        recurring: '',
+        start_date: selectedStartDate,
+        target_date: selectedEndDate,
+        description: goalDescription,
+      }),
+      redirect: "follow",
+    };
+
+    fetch(`http://dev.trackability.net.au:8082/goals/summary/save/${2165}`, requestOptions)
+      .then((res) =>
+        res.json().then((data) => {
+          if (data.responseStatus === 200) {
+            showToast()
+            if (next === "next") {
+              navigate("/trackability/goal/outcomes");
+            }
+          } else if (data.responseStatus === 400) {
+            showErrorToast();
+          }
+        })
+      )
+      .catch(showErrorToast());
+  };
+
   return (
     <>
       {!nextPage ? (
-        <SafeAreaView className="flex flex-col justify-evenly h-full p-2">
+        <ScrollView>
+            <SafeAreaView className="flex flex-col gap-10 p-2" >
+
           <View>
             <Text className="text-[15px] font-popMedium m-1">Goal Title</Text>
             <TextInput
@@ -296,15 +345,20 @@ const Goalsum = () => {
             onPress={() => {
               setNaxtPage(true);
             }}
-            className="w-16 bg-blue-400 h-[60px] ml-auto rounded-full flex justify-center items-center"
           >
+            <View 
+            className="w-16 bg-blue-400 h-[60px] ml-auto rounded-full flex justify-center items-center">
             <Ionicons name="chevron-forward-outline" size={30} color="white" />
+            </View>
           </TouchableOpacity>
+
         </SafeAreaView>
+          </ScrollView>
       ) : (
-        <SafeAreaView className="flex justify-evenly h-[80vh] p-1">
+        <ScrollView>
+        <SafeAreaView className="flex flex-col justify-evenly h-[80vh] p-1">
           {goalFor !== "Self" ? (
-            <View className="pb-3">
+            <View>
               <View className="flex flex-row justify-evenly items-center">
                 <TextInput
                   className="border p-2 text-l rounded w-2/5 placeholder:font-popMedium "
@@ -336,7 +390,7 @@ const Goalsum = () => {
             </View>
           ) : null}
 
-          <View className="pb-3">
+          <View>
             <Text className="text-[15px] font-popMedium mx-2">Goal Type</Text>
             <View>
               <RadioButton.Group
@@ -419,7 +473,6 @@ const Goalsum = () => {
             )}
           </View>
 
-          <View className="pb-3">
             <Text className="text-[15px] font-popMedium mx-2">
               Goal Summary
             </Text>
@@ -429,9 +482,8 @@ const Goalsum = () => {
               multiline
               className="border min-h-[13vh] p-1 my-2 rounded text-[15px] font-popMedium"
             ></TextInput>
-          </View>
 
-          <View className="pb-3">
+          <View>
             <Text className="text-[15px] font-popMedium mx-2">
               Share Your Goal to
             </Text>
@@ -457,10 +509,7 @@ const Goalsum = () => {
           </View>
 
           <TouchableOpacity
-            onPress={() => {
-              showToast()
-              // setNaxtPage(false);
-            }}
+            onPress={handleOnSave()}
             className="w-1/4  p-2 bg-blue-400 ml-auto rounded-[15px]"
           >
             <Text className="text-[15px] text-center font-popMedium text-white font-semibold">
@@ -468,6 +517,7 @@ const Goalsum = () => {
             </Text>
           </TouchableOpacity>
         </SafeAreaView>
+        </ScrollView>
       )}
     </>
   );

@@ -1,6 +1,6 @@
 import Routing from "../navigation/AppNavigator";
 import React, { useEffect, useCallback, useState } from "react";
-import { LogBox } from "react-native";
+import { LogBox, Text, View } from "react-native";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import * as Font from "expo-font";
@@ -9,6 +9,7 @@ import store from "../redux/store";
 import Toast from 'react-native-toast-message';
 
 export default function App() {
+
   const [fontsLoaded] = useFonts({
     PoppinsLight: require("../assets/fonts/Poppins-Light.ttf"),
     PoppinsRegular: require("../assets/fonts/Poppins-Regular.ttf"),
@@ -43,10 +44,19 @@ export default function App() {
 
   LogBox.ignoreLogs(["EventEmitter.removeListener"]);
 
+  const toastConfig = {
+
+    tomatoToast: ({ text1, props }) => (
+      <View style={{ height: 80, width: '95%', backgroundColor: 'white'  }} className='rounded-lg p-2 justify-center items-center' >
+        <Text className='text-[15px] font-popMedium text-red-500' >{props.text}</Text>
+      </View>
+    )
+  };
+
   return (
     <Provider store={store}>
       <Routing onLayoutRootView={onLayoutRootView} />
-      <Toast />
+      <Toast config={toastConfig} />
     </Provider>
   );
 }
