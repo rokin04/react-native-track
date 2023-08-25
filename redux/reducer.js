@@ -62,6 +62,38 @@ const reducer = (state = initialState, action) => {
       return { ...state, showConfirmationDialog: action.payload };
     case reduxAction.SET_ROLEID:
       return { ...state, roleId: action.payload };
+      
+    case reduxAction.UPDATE_EXPECTED_OUTCOMES:
+      return { ...state, expectedoutcome: action.payload};
+
+    case reduxAction.UPDATE_MILESTONE_DATA:
+      return { ...state, milestonedata: action.payload};
+
+    case reduxAction.ADD_GROUP_MILESTONE_DATA:
+      return { ...state, settingmilestonedata: action.payload}
+
+    case reduxAction.UPDATE_PEOPLE_DATA:
+      return { ...state, shareFamilyData:action.payload};
+
+    case reduxAction.UPDATE_REVIEWER_DATA:
+      return {...state, shareReviewerData:action.payload};
+    
+    case reduxAction.ADD_GROUP_FAMILY_DATA:
+      return { ...state, settingFamilyData: action.payload}
+
+    case reduxAction.ADD_GROUP_REVIEWER_DATA:
+      return { ...state, settingReviewerData: action.payload}
+
+
+    // case reduxAction.UPDATE_MILESTONE_DESC:
+    //   return { ...state, milestonedesc: action.payload};
+
+    // case reduxAction.UPDATE_MILESTONE_START:
+    //   return { ...state, milestonestart: action.payload};
+
+    // case reduxAction.UPDATE_MILESTONE_END:
+    //   return { ...state, milestoneend: action.payload};
+
     default:
       return { ...state };
   }

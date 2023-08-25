@@ -14,36 +14,91 @@ import AvatarScreen from '../views/Avatars/Avatars';
 import Privacysettings from '../views/Privacy Settings/Privacysettings';
 import Setnotifications from '../views/Set Notifications/Setnotifications';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
+import { Text , TouchableOpacity, View, useWindowDimensions } from 'react-native';
+import { TabView, SceneMap } from 'react-native-tab-view';
+import { FONT } from '../constants';
+import Goalsum from '../views/Goal/Goalsum';
+import Outcomes from '../views/Goal/Outcomes';
+import Goalprogress from '../views/Goal/Goalprogress';
+import ShareGoal from '../views/Goal/ShareGoal';
+import { ScrollView } from 'react-native';
 
 const Stack = createStackNavigator();
-const Tab = createMaterialTopTabNavigator();
 
 function Routing() {
 
-  function ProfileTopTabs() {
+
+  const FirstRoute = () => (
+    <Goalsum />
+  );
+  
+  const SecondRoute = () => (
+    <Outcomes />
+  );
+  const ThirdRoute = () => (
+    <ShareGoal />
+  );
+  const FourthRoute = () => (
+    <Goalprogress />
+  );
+  
+  const renderScene = SceneMap({
+    first: FirstRoute,
+    second: SecondRoute,
+    third: ThirdRoute,
+    fourth: FourthRoute,
+  });
+  
+function Goal() {
+  
+    const [index, setIndex] = React.useState(0);
+    
+    const [routes] = React.useState([
+      { key: 'first', title: 'Goal Summary' },
+      { key: 'second', title: 'Outcomes' },
+      { key: 'third', title: 'Share Goal' },
+      { key: 'fourth', title: 'Goal Progress' },
+    ]);
+  
     return (
-      <Tab.Navigator
-        screenOptions={{
-          tabBarScrollEnabled: true,
-          tabBarIndicatorStyle: {
-            backgroundColor: "#FFBF13",
-            height: 3,
-          },
-          labelStyle: {
-            textTransform: 'capitalize',
-            fontWeight: 'bold',
-            opacity: 0.8,
-            }
-        }}
-        sceneContainerStyle={{ backgroundColor: "white" }}
-      >
-        <Tab.Screen name="Profile Setting" component={Profile} />
-        <Tab.Screen name="Avatars" component={AvatarScreen}/>
-        <Tab.Screen name="Privacy Settings" component={Privacysettings}/>
-        <Tab.Screen name="Set Notifications" component={Setnotifications} />
-      </Tab.Navigator>
-    )
+      <TabView
+        navigationState={{ index, routes }}
+        renderScene={renderScene}
+        onIndexChange={setIndex}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        renderTabBar={({ navigationState }) => (
+          <View>
+
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flexDirection: 'row', backgroundColor: '#F5F5F5' }}>
+            {navigationState.routes.map((route, tabIndex) => {
+
+              const isFocused = tabIndex === navigationState.index;
+              const tabColor = isFocused ? 'black' : '#333';
+  
+              return (
+                <TouchableOpacity
+                  key={tabIndex}
+                  onPress={() => setIndex(tabIndex)}
+                  style={{
+                    alignItems: 'center',
+                    padding: 16,
+                    borderBottomWidth: isFocused ? 2.5 : 0,
+                    borderBottomColor: '#FFBF13',
+                  }}
+                >
+                  <Text style={{ color: tabColor , fontFamily: !isFocused ? FONT.regular : FONT.medium  }} >{route.title}</Text>
+                </TouchableOpacity>
+              );
+            })}
+          </ScrollView>
+          </View>
+        )}
+      />
+    );
   }
+  
 
   return (
     <NavigationContainer independent={true}>
@@ -56,8 +111,7 @@ function Routing() {
         <Stack.Screen name="Forgot" component={ForgetPassword} />
         <Stack.Screen name="EnterOTP" component={EnterOTP} />
         <Stack.Screen name="ResetPassword" component={ResetPassword} />
-        <Stack.Screen name="Create Goal" component={Goal} options={{ headerStyle: { backgroundColor: "#029BF7"},headerTintColor: "white" }} />
-        <Stack.Screen name="Profile" component={ProfileTopTabs} options={{ headerStyle: { backgroundColor: "#019FFE", }, headerTintColor: "white", }} />
+        <Stack.Screen name="Login" component={Goal} options={{ headerStyle: { backgroundColor: "#019FFE", }, headerTintColor: "white", }} />
       </Stack.Navigator>
 
     </NavigationContainer>
@@ -65,12 +119,3 @@ function Routing() {
 };
 
 export default Routing;
-
-
-
-
-
-
-
-
-
