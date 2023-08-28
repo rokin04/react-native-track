@@ -1,18 +1,5 @@
 import React from "react";
-import {
-  View,
-  Text,
-  Image,
-  StyleSheet,
-  SafeAreaView,
-  TouchableOpacity,
-} from "react-native";
-import { COLORS, SHADOWS, SIZES, IMAGES, FONT, ICONS } from "../../constants";
-import { Stack } from "expo-router";
-import { ScrollView } from "react-native";
-import { FlatList } from "react-native";
 import Goalsum from "./Goalsum";
-import { useState } from "react";
 import Outcomes from "./Outcomes";
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import ShareGoal from "./ShareGoal";
