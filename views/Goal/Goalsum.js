@@ -32,7 +32,7 @@ const Goalsum = () => {
   const [selectedEndDate, setSelectedEndDate] = useState(null);
   const [isDatePicker1Visible, setDatePicker1Visibility] = useState(false);
   const [isDatePicker2Visible, setDatePicker2Visibility] = useState(false);
-
+  const [RecurringFor, setRecurringFor] = useState('')
   // const GoalFordata = [
   //   { name: 'Goal 1' },
   //   { name: 'Goal 2' },
@@ -187,8 +187,15 @@ const Goalsum = () => {
     });
   };
 
+  const handleOnDeletePerson = (index) => {
+    const filteredData = GoalFordata.filter( data =>  data?.name !== GoalFordata[index]?.name )  
+    dispatch({
+      type: reduxAction.DEL_GROUP_PERSON,
+      payload: filteredData,
+    });
+  }
+ 
   const handleOnSave = (next) => () => {
-    console.log('triggered');
     var myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
     var requestOptions = {
@@ -228,9 +235,8 @@ const Goalsum = () => {
   return (
     <>
       {!nextPage ? (
-        <ScrollView>
+        <ScrollView style={{backgroundColor:'white'}} >
             <SafeAreaView className="flex flex-col gap-10 p-2" >
-
           <View>
             <Text className="text-[15px] font-popMedium m-1">Goal Title</Text>
             <TextInput
@@ -296,6 +302,8 @@ const Goalsum = () => {
                     <Picker>
                       <Picker.Item label="health" value="reactJs" />
                       <Picker.Item label="Welth" value="reactJs Native" />
+                      <Picker.Item label="Welth" value="reactJs Native" />
+                      <Picker.Item label="Welth" value="reactJs Native" />
                     </Picker>
                   </View>
                   <View className="border h-[15vh] my-2 rounded"></View>
@@ -352,171 +360,178 @@ const Goalsum = () => {
             </View>
           </TouchableOpacity>
 
-        </SafeAreaView>
+            </SafeAreaView>
           </ScrollView>
       ) : (
-        <ScrollView>
-        <SafeAreaView className="flex flex-col justify-evenly h-[80vh] p-1">
-          {goalFor !== "Self" ? (
-            <View>
-              <View className="flex flex-row justify-evenly items-center">
-                <TextInput
-                  className="border p-2 text-l rounded w-2/5 placeholder:font-popMedium "
-                  placeholder="Name"
-                  onChangeText={handleOnAddPersonName}
-                />
-                <TextInput
-                  className="border p-2 text-l rounded w-2/5 placeholder:font-popMedium "
-                  placeholder="Email"
-                  onChangeText={handleOnAddPersonEmail}
-                />
-                <TouchableOpacity onPress={handleAddPerson}>
-                  <Ionicons name="add-circle-outline" size={40} color="gray" />
-                </TouchableOpacity>
-              </View>
+        <ScrollView style={{backgroundColor:'white'}} >
+            <SafeAreaView className="flex flex-col justify-evenly h-[80vh] p-1">
+              {goalFor !== "Self" ? (
+                <View>
+                  <View className="flex flex-row justify-evenly items-center">
+                    <TextInput
+                      className="border p-2 text-l rounded w-2/5 placeholder:font-popMedium "
+                      placeholder="Name"
+                      onChangeText={handleOnAddPersonName}
+                    />
+                    <TextInput
+                      className="border p-2 text-l rounded w-2/5 placeholder:font-popMedium "
+                      placeholder="Email"
+                      onChangeText={handleOnAddPersonEmail}
+                    />
+                    <TouchableOpacity onPress={handleAddPerson}>
+                      <Ionicons name="add-circle-outline" size={40} color="gray" />
+                    </TouchableOpacity>
+                  </View>
 
-              <View className="flex flex-row gap-2 m-1 flex-wrap">
-                {GoalFordata.map((data) => {
-                  return (
-                    data.name !== '' && <TouchableOpacity>
-                      <View className="rounded-xl p-[2px] px-5 bg-gray-200 flex flex-row items-center">
-                        <Text className="font-popMedium "> {data.name} </Text>
-                        <Ionicons name="close-circle" size={20} color="gray" />
+                  <View className="flex flex-row gap-2 m-1 flex-wrap">
+                    {GoalFordata.map((data , index) => {
+                      return (
+                        data.name !== '' && 
+                        <TouchableOpacity onPress={()=>{handleOnDeletePerson(index)}} key={index} >
+                          <View className="rounded-xl p-[2px] px-5 bg-gray-200 flex flex-row items-center">
+                            <Text className="font-popMedium "> {data.name} </Text>
+                            <Ionicons name="close-circle" size={20} color="gray" />
+                          </View>
+                        </TouchableOpacity>
+                      );
+                    })}
+                  </View>
+                </View>
+              ) : null}
+
+              <View>
+                <Text className="text-[15px] font-popMedium mx-2">Goal Type</Text>
+                <View>
+                  <RadioButton.Group
+                    onValueChange={handleOnSetGoalType}
+                    value={goalType}
+                  >
+                    <View className="flex flex-row pb-2">
+                      <View className="flex flex-row justify-center items-center">
+                        <RadioButton value="Recurring" />
+                        <Text className="text-sm font-popMedium">Recurring</Text>
+                      </View>
+                      <View className="flex flex-row justify-center items-center">
+                        <RadioButton value="One-Time" />
+                        <Text className="text-sm font-popMedium">
+                          One-Time Achievement
+                        </Text>
+                      </View>
+                    </View>
+                  </RadioButton.Group>
+                </View>
+                {goalType === "Recurring" ? (
+                  <View className="border rounded text-2xl ">
+                    <Picker 
+                    selectedValue={RecurringFor}
+                    onValueChange={(item , index)=>{
+                      setRecurringFor(item)
+                    }} >
+                      <Picker.Item label="Daily" value="Daily" />
+                      <Picker.Item label="Weekly" value="Weekly" />
+                      <Picker.Item label="Monthly" value="Monthly" />
+                      <Picker.Item label="Quarterly" value="Quarterly" />
+                    </Picker>
+                  </View>
+                ) : null}
+                {goalType && (
+                  <View className="pt-3 flex justify-evenly flex-row gap-5 px-3">
+                    <TouchableOpacity
+                      onPress={showDatePicker1}
+                      uppercase={false}
+                      mode="contained"
+                      className="h-10 w-1/2"
+                    >
+                      <View
+                        className=" flex flex-row justify-evenly items-center border h-full text-l rounded w-full placeholder:font-popMedium"
+                        placeholder="Name"
+                      >
+                        <Text className="text-base font-popMedium font-light">
+                          {selectedStartDate
+                            ? formatDate(selectedStartDate)
+                            : "Start Date"}
+                        </Text>
+                        <Ionicons name="calendar" size={25} color="gray" />
                       </View>
                     </TouchableOpacity>
-                  );
-                })}
+                    <DateTimePickerModal
+                      isVisible={isDatePicker1Visible}
+                      mode="date"
+                      onConfirm={handleStartDate}
+                      onCancel={hideDatePicker}
+                    />
+                    <TouchableOpacity
+                      onPress={showDatePicker2}
+                      uppercase={false}
+                      mode="contained"
+                      className="h-10 w-1/2"
+                    >
+                      <View
+                        className=" flex flex-row justify-evenly items-center border h-full text-l rounded w-full placeholder:font-popMedium"
+                        placeholder="Name"
+                      >
+                        <Text className="text-base font-popMedium font-light">
+                          {selectedEndDate
+                            ? formatDate(selectedEndDate)
+                            : "End Date"}
+                        </Text>
+                        <Ionicons name="calendar" size={25} color="gray" />
+                      </View>
+                    </TouchableOpacity>
+                    <DateTimePickerModal
+                      isVisible={isDatePicker2Visible}
+                      mode="date"
+                      onConfirm={handleEndDate}
+                      onCancel={hideDatePicker}
+                    />
+                  </View>
+                )}
               </View>
-            </View>
-          ) : null}
 
-          <View>
-            <Text className="text-[15px] font-popMedium mx-2">Goal Type</Text>
-            <View>
-              <RadioButton.Group
-                onValueChange={handleOnSetGoalType}
-                value={goalType}
-              >
-                <View className="flex flex-row pb-2">
-                  <View className="flex flex-row justify-center items-center">
-                    <RadioButton value="Recurring" />
-                    <Text className="text-sm font-popMedium">Recurring</Text>
-                  </View>
-                  <View className="flex flex-row justify-center items-center">
-                    <RadioButton value="One-Time" />
-                    <Text className="text-sm font-popMedium">
-                      One-Time Achievement
-                    </Text>
-                  </View>
-                </View>
-              </RadioButton.Group>
-            </View>
-            {goalType === "Recurring" ? (
-              <View className="border rounded text-2xl font-popMedium ">
-                <Picker>
-                  <Picker.Item label="Daily" value="Daily" />
-                  <Picker.Item label="Weekly" value="Weekly" />
-                </Picker>
-              </View>
-            ) : null}
-            {goalType && (
-              <View className="pt-3 flex justify-evenly flex-row gap-5 px-3">
-                <TouchableOpacity
-                  onPress={showDatePicker1}
-                  uppercase={false}
-                  mode="contained"
-                  className="h-10 w-1/2"
-                >
-                  <View
-                    className=" flex flex-row justify-evenly items-center border h-full text-l rounded w-full placeholder:font-popMedium"
-                    placeholder="Name"
+                <Text className="text-[15px] font-popMedium mx-2">
+                  Goal Summary
+                </Text>
+                <TextInput
+                  onChangeText={handleOnGoalDescription}
+                  value={goalDescription}
+                  multiline
+                  className="border min-h-[13vh] p-1 my-2 rounded text-[15px] font-popMedium"
+                ></TextInput>
+
+              <View>
+                <Text className="text-[15px] font-popMedium mx-2">
+                  Share Your Goal to
+                </Text>
+                <View>
+                  <RadioButton.Group
+                    onValueChange={handleOnShareGoalTo}
+                    value={shareGoalTo}
                   >
-                    <Text className="text-base font-popMedium font-light">
-                      {selectedStartDate
-                        ? formatDate(selectedStartDate)
-                        : "Start Date"}
-                    </Text>
-                    <Ionicons name="calendar" size={25} color="gray" />
-                  </View>
-                </TouchableOpacity>
-                <DateTimePickerModal
-                  isVisible={isDatePicker1Visible}
-                  mode="date"
-                  onConfirm={handleStartDate}
-                  onCancel={hideDatePicker}
-                />
-                <TouchableOpacity
-                  onPress={showDatePicker2}
-                  uppercase={false}
-                  mode="contained"
-                  className="h-10 w-1/2"
-                >
-                  <View
-                    className=" flex flex-row justify-evenly items-center border h-full text-l rounded w-full placeholder:font-popMedium"
-                    placeholder="Name"
-                  >
-                    <Text className="text-base font-popMedium font-light">
-                      {selectedEndDate
-                        ? formatDate(selectedEndDate)
-                        : "End Date"}
-                    </Text>
-                    <Ionicons name="calendar" size={25} color="gray" />
-                  </View>
-                </TouchableOpacity>
-                <DateTimePickerModal
-                  isVisible={isDatePicker2Visible}
-                  mode="date"
-                  onConfirm={handleEndDate}
-                  onCancel={hideDatePicker}
-                />
-              </View>
-            )}
-          </View>
-
-            <Text className="text-[15px] font-popMedium mx-2">
-              Goal Summary
-            </Text>
-            <TextInput
-              onChangeText={handleOnGoalDescription}
-              value={goalDescription}
-              multiline
-              className="border min-h-[13vh] p-1 my-2 rounded text-[15px] font-popMedium"
-            ></TextInput>
-
-          <View>
-            <Text className="text-[15px] font-popMedium mx-2">
-              Share Your Goal to
-            </Text>
-            <View>
-              <RadioButton.Group
-                onValueChange={handleOnShareGoalTo}
-                value={shareGoalTo}
-              >
-                <View className="flex flex-row">
-                  <View className="flex flex-row justify-center items-center">
-                    <RadioButton value="fam/Friends" />
-                    <Text className="text-sm font-popMedium">
-                      Family Friends/Colleagues
-                    </Text>
-                  </View>
-                  <View className="flex flex-row justify-center items-center">
-                    <RadioButton value="Reviewer" />
-                    <Text className="text-sm font-popMedium">Reviewer</Text>
-                  </View>
+                    <View className="flex flex-row">
+                      <View className="flex flex-row justify-center items-center">
+                        <RadioButton value="fam/Friends" />
+                        <Text className="text-sm font-popMedium">
+                          Family Friends/Colleagues
+                        </Text>
+                      </View>
+                      <View className="flex flex-row justify-center items-center">
+                        <RadioButton value="Reviewer" />
+                        <Text className="text-sm font-popMedium">Reviewer</Text>
+                      </View>
+                    </View>
+                  </RadioButton.Group>
                 </View>
-              </RadioButton.Group>
-            </View>
-          </View>
+              </View>
 
-          <TouchableOpacity
-            onPress={handleOnSave()}
-            className="w-1/4  p-2 bg-blue-400 ml-auto rounded-[15px]"
-          >
-            <Text className="text-[15px] text-center font-popMedium text-white font-semibold">
-              Save
-            </Text>
-          </TouchableOpacity>
-        </SafeAreaView>
+              <TouchableOpacity
+                onPress={handleOnSave()}
+                className="w-1/4  p-2 bg-blue-400 ml-auto rounded-[15px]"
+              >
+                <Text className="text-[15px] text-center font-popMedium text-white font-semibold">
+                  Save
+                </Text>
+              </TouchableOpacity>
+            </SafeAreaView>
         </ScrollView>
       )}
     </>
