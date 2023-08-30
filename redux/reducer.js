@@ -79,11 +79,13 @@ const reducer = (state = initialState, action) => {
       return {...state, shareReviewerData:action.payload};
     
     case reduxAction.ADD_GROUP_FAMILY_DATA:
-      return { ...state, settingFamilyData: action.payload}
+      return { ...state, settingFamilyData: action.payload};
 
     case reduxAction.ADD_GROUP_REVIEWER_DATA:
-      return { ...state, settingReviewerData: action.payload}
+      return { ...state, settingReviewerData: action.payload};
 
+    case reduxAction.UPDATE_PARAMETER_DATA:
+      return { ...state, parameterdata: action.payload};
 
     // case reduxAction.UPDATE_MILESTONE_DESC:
     //   return { ...state, milestonedesc: action.payload};

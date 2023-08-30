@@ -5,7 +5,15 @@ export const initialState = {
 
     settingFamilyData: [{peoplefirstname: null,peoplelastname: null, peopleemail: null, peoplephno: null, reasontoshare1: null, peoplerole: null, peoplepermissions: null}],
 
-    settingReviewerData: [{reviewerfirstname: null, reviewerlastname: null, revieweremail: null, reviewerphno: null, reasontoshare2: null}],
+    settingReviewerData: [{reviewerfirstname: null, reviewerlastname: null, revieweremail: null, reviewerphno: null, reasontoshare2: null, parameterstoreview: []}],
+
+    parameterdata: [
+      { id: 1,reviewfrequency:"", data: "Basic Needs (food, water, air, rest etc)" },
+      { id: 2,reviewfrequency:"", data: "Security and Stability (home and personal safety)" },
+      { id: 3,reviewfrequency:"", data: "Love and Belonging (relationships)" },
+      { id: 4,reviewfrequency:"", data: "Esteem" },
+      { id: 5,reviewfrequency:"", data: "Self Actualisation" },
+    ],
     
     userDetails: [],
     userEmail: null,
