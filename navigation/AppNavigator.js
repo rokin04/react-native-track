@@ -94,7 +94,7 @@ function Goal( {navigation} ) {
   
 
   return (
-    <NavigationContainer independent={true} >
+    <NavigationContainer independent={true}  >
 
       <Stack.Navigator style={{ backgroundColor: "#FFF" }}>
         <Stack.Screen name="Home" component={Home} options={{ headerShown: false }} />

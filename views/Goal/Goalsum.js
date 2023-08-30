@@ -20,6 +20,7 @@ import { useDispatch, useSelector } from "react-redux";
 import reduxAction from "../../redux/action";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import Toast , { BaseToast } from 'react-native-toast-message';
+import Achiever from "../../components/ForGoalSum/Achiever";
 
 const Goalsum = () => {
   const [nextPage, setNaxtPage] = useState(false);
@@ -33,11 +34,7 @@ const Goalsum = () => {
   const [isDatePicker1Visible, setDatePicker1Visibility] = useState(false);
   const [isDatePicker2Visible, setDatePicker2Visibility] = useState(false);
   const [RecurringFor, setRecurringFor] = useState('')
-  // const GoalFordata = [
-  //   { name: 'Goal 1' },
-  //   { name: 'Goal 2' },
-  //   { name: 'Goal 3' },
-  // ];
+
   const {
     goalPriority,
     goalTitle,
@@ -58,8 +55,6 @@ const Goalsum = () => {
 
   const newGoalForData = { groupName, email, name };
 
-  console.log(goalSummaryData);
-
   const showDatePicker1 = () => {
     setDatePicker1Visibility(true);
   };
@@ -76,11 +71,21 @@ const Goalsum = () => {
   const handleStartDate = (date) => {
     setSelectedStartDate(date);
     hideDatePicker();
+    const formatedDate = formatDate(date)
+    dispatch({
+      type: reduxAction.UPDATE_GOAL_SUMMARY_DATA,
+      payload: { ...goalSummaryData, startDate: formatedDate },
+    });
   };
 
   const handleEndDate = (date) => {
     setSelectedEndDate(date);
     hideDatePicker();
+    const formatedDate = formatDate(date)
+    dispatch({
+      type: reduxAction.UPDATE_GOAL_SUMMARY_DATA,
+      payload: { ...goalSummaryData, targetDate: formatedDate },
+    });
   };
 
   const formatDate = (date) => {
@@ -204,17 +209,18 @@ const Goalsum = () => {
       body: JSON.stringify({
         title: goalTitle,
         priority: goalPriority,
-        area: '',
-        area_custom: enterGoalArea,
+        area: goalArea,
+        area_custom: '',
         goal_for: goalFor,
         forSomeoneElse: GoalFordata,
-        recurring: '',
-        start_date: selectedStartDate,
-        target_date: selectedEndDate,
+        recurring:goalType,
+        start_date: startDate,
+        target_date: targetDate,
         description: goalDescription,
       }),
       redirect: "follow",
     };
+    console.log(requestOptions.body);
 
     fetch(`http://dev.trackability.net.au:8082/goals/summary/save/${2165}`, requestOptions)
       .then((res) =>
@@ -274,7 +280,6 @@ const Goalsum = () => {
               Trackability has a set of pre-configured goal areas for you to
               select. Do you want to select one of them or set your own goal ?
             </Text>
-            <View></View>
             <View>
               <RadioButton.Group
                 onValueChange={handleOnSetGoalArea}
@@ -297,17 +302,7 @@ const Goalsum = () => {
               </RadioButton.Group>
 
               {goalArea === "Select" ? (
-                <View>
-                  <View className="border rounded text-2xl font-popMedium ">
-                    <Picker>
-                      <Picker.Item label="health" value="reactJs" />
-                      <Picker.Item label="Welth" value="reactJs Native" />
-                      <Picker.Item label="Welth" value="reactJs Native" />
-                      <Picker.Item label="Welth" value="reactJs Native" />
-                    </Picker>
-                  </View>
-                  <View className="border h-[15vh] my-2 rounded"></View>
-                </View>
+              <View ><Achiever /></View> 
               ) : (
                 <View>
                   <Text className="text-[15px] font-popMedium m-1">
@@ -382,11 +377,13 @@ const Goalsum = () => {
                       <Ionicons name="add-circle-outline" size={40} color="gray" />
                     </TouchableOpacity>
                   </View>
+                  <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flexDirection: 'row', backgroundColor: '#FFFFFF' }}>
 
                   <View className="flex flex-row gap-2 m-1 flex-wrap">
                     {GoalFordata.map((data , index) => {
                       return (
-                        data.name !== '' && 
+                        data.name !== null && 
+
                         <TouchableOpacity onPress={()=>{handleOnDeletePerson(index)}} key={index} >
                           <View className="rounded-xl p-[2px] px-5 bg-gray-200 flex flex-row items-center">
                             <Text className="font-popMedium "> {data.name} </Text>
@@ -396,6 +393,8 @@ const Goalsum = () => {
                       );
                     })}
                   </View>
+          </ScrollView>
+
                 </View>
               ) : null}
 
