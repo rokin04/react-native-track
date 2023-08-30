@@ -8,13 +8,6 @@ import Register from '../views/Register/Register';
 import ForgetPassword from '../views/Login/ForgetPassword';
 import EnterOTP from '../views/Login/EnterOTP';
 import ResetPassword from '../views/Login/ResetPassword';
-import Goal from '../views/Goal/Goal';
-import Profile from '../views/Profile/Profile';
-import AvatarScreen from '../views/Avatars/Avatars';
-import Privacysettings from '../views/Privacy Settings/Privacysettings';
-import Setnotifications from '../views/Set Notifications/Setnotifications';
-import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { Text , TouchableOpacity, View, useWindowDimensions } from 'react-native';
 import { TabView, SceneMap } from 'react-native-tab-view';
 import { FONT } from '../constants';
@@ -23,24 +16,26 @@ import Outcomes from '../views/Goal/Outcomes';
 import Goalprogress from '../views/Goal/Goalprogress';
 import ShareGoal from '../views/Goal/ShareGoal';
 import { ScrollView } from 'react-native';
+import Dashboard from '../views/Dashboard/Dashboard'
 
 const Stack = createStackNavigator();
 
 function Routing() {
-
-
+  
+function Goal( {navigation} ) {
+  
   const FirstRoute = () => (
-    <Goalsum />
+    <Goalsum navigation={navigation} />
   );
   
   const SecondRoute = () => (
-    <Outcomes />
+    <Outcomes navigation={navigation} />
   );
   const ThirdRoute = () => (
-    <ShareGoal />
+    <ShareGoal navigation={navigation} />
   );
   const FourthRoute = () => (
-    <Goalprogress />
+    <Goalprogress navigation={navigation} />
   );
   
   const renderScene = SceneMap({
@@ -49,9 +44,7 @@ function Routing() {
     third: ThirdRoute,
     fourth: FourthRoute,
   });
-  
-function Goal() {
-  
+
     const [index, setIndex] = React.useState(0);
     
     const [routes] = React.useState([
@@ -71,7 +64,7 @@ function Goal() {
         renderTabBar={({ navigationState }) => (
           <View>
 
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flexDirection: 'row', backgroundColor: '#F5F5F5' }}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flexDirection: 'row', backgroundColor: '#FFFFFF' }}>
             {navigationState.routes.map((route, tabIndex) => {
 
               const isFocused = tabIndex === navigationState.index;
@@ -101,17 +94,18 @@ function Goal() {
   
 
   return (
-    <NavigationContainer independent={true}>
+    <NavigationContainer independent={true}  >
 
-      <Stack.Navigator style={{ backgroundColor: "white" }}>
+      <Stack.Navigator style={{ backgroundColor: "#FFF" }}>
         <Stack.Screen name="Home" component={Home} options={{ headerShown: false }} />
-        <Stack.Screen name="About" component={About} />
+        <Stack.Screen name="Dashboard" component={Dashboard} options={{ headerShown: false }} />
         {/* <Stack.Screen name="Login" component={Login} /> */}
+        <Stack.Screen name="About" component={About} />
         <Stack.Screen name="Register" component={Register} />
         <Stack.Screen name="Forgot" component={ForgetPassword} />
         <Stack.Screen name="EnterOTP" component={EnterOTP} />
         <Stack.Screen name="ResetPassword" component={ResetPassword} />
-        <Stack.Screen name="Login" component={Goal} options={{ headerStyle: { backgroundColor: "#019FFE", }, headerTintColor: "white", }} />
+        <Stack.Screen name="Goal" component={Goal} options={{ headerStyle: { backgroundColor: "#019FFE", }, headerTintColor: "white" }} />
       </Stack.Navigator>
 
     </NavigationContainer>
@@ -119,3 +113,10 @@ function Goal() {
 };
 
 export default Routing;
+
+
+
+
+
+
+

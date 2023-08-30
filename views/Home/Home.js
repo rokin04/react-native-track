@@ -7,7 +7,7 @@ import styles from './home.style';
 const Home = ({ navigation }) => {
 
   const handleSkipPress = () => {
-    navigation.navigate('Login');
+    navigation.navigate('Goal');
   };
   const handleAboutPress = () => {
     navigation.navigate('About');

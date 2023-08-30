@@ -209,11 +209,11 @@ console.log(data);
 
   return (
     <PaperProvider>
-    <SafeAreaView className="p-4" style={{marginTop:-10}}>
+    <SafeAreaView className="p-4" style={{marginTop:-10 , backgroundColor:'white'}}>
     <View className="pb-5">
       <Text className="text-lg font-popMedium mb-3" style={{color:'#263238'}}>Outcome</Text>
-      <TextInput placeholderTextColor={'#54585A'} style={{borderColor:'#D0D2D2'}} 
-      className="border p-3 text-lg rounded" onChangeText={handleOnOutcomeGoalChange} value={out} placeholder='Enter Expected Outcome of this Goal' />
+      <TextInput style={{borderColor:'#D0D2D2'}} 
+      className="border p-3 text-base rounded placeholder:font-popMedium placeholder:text-['#54585A']" onChangeText={handleOnOutcomeGoalChange} value={out} placeholder='Enter Expected Outcome of this Goal' />
     </View>
     <View className="pb-2 mt-3">
       <Text className="text-lg font-popMedium pb-3" style={{fontSize:16, color:'#263238'}}>
@@ -224,11 +224,11 @@ console.log(data);
         <View className="flex-row">
           <View className="flex flex-row items-center mr-16">
             <RadioButton value="yes"/>
-            <Text>Yes</Text>
+            <Text className='font-popMedium text-sm' >Yes</Text>
           </View>
           <View className="flex flex-row items-center">
             <RadioButton value="no"/>
-            <Text>No</Text>
+            <Text className='font-popMedium text-sm' >No</Text>
           </View>
         </View>
         </RadioButton.Group>

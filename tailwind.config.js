@@ -4,7 +4,9 @@ module.exports = {
   theme: {
     extend: {
       fontFamily:{
-        popMedium:'PoppinsMedium'
+        popMedium:'PoppinsMedium',
+        poplarge:'PoppinsBold',
+        PopLight:'PoppinsLight'
       }
     },
   },
