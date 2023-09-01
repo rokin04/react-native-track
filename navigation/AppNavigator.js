@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import Login from '../views/Login/Login';
 import Home from '../views/Home/Home';
@@ -17,12 +17,15 @@ import Goalprogress from '../views/Goal/Goalprogress';
 import ShareGoal from '../views/Goal/ShareGoal';
 import { ScrollView } from 'react-native';
 import Dashboard from '../views/Dashboard/Dashboard'
+import { useSelector } from 'react-redux';
 
 const Stack = createStackNavigator();
 
 function Routing() {
   
 function Goal( {navigation} ) {
+
+  const GoalPage = useSelector((state) => state.changeGoalPage)
   
   const FirstRoute = () => (
     <Goalsum navigation={navigation} />
@@ -53,6 +56,10 @@ function Goal( {navigation} ) {
       { key: 'third', title: 'Share Goal' },
       { key: 'fourth', title: 'Goal Progress' },
     ]);
+
+    useEffect(()=>{
+      setIndex(GoalPage)
+    },[GoalPage])
   
     return (
       <TabView
@@ -96,16 +103,16 @@ function Goal( {navigation} ) {
   return (
     <NavigationContainer independent={true}  >
 
-      <Stack.Navigator style={{ backgroundColor: "#FFF" }}>
-        <Stack.Screen name="Home" component={Home} options={{ headerShown: false }} />
-        <Stack.Screen name="Dashboard" component={Dashboard} options={{ headerShown: false }} />
-        {/* <Stack.Screen name="Login" component={Login} /> */}
+      <Stack.Navigator >
+        {/* <Stack.Screen name="Home" component={Home} options={{ headerShown: false }} />
+        <Stack.Screen name="Login" component={Login} />
         <Stack.Screen name="About" component={About} />
         <Stack.Screen name="Register" component={Register} />
         <Stack.Screen name="Forgot" component={ForgetPassword} />
         <Stack.Screen name="EnterOTP" component={EnterOTP} />
-        <Stack.Screen name="ResetPassword" component={ResetPassword} />
+        <Stack.Screen name="ResetPassword" component={ResetPassword} /> */}
         <Stack.Screen name="Goal" component={Goal} options={{ headerStyle: { backgroundColor: "#019FFE", }, headerTintColor: "white" }} />
+        <Stack.Screen name="Dashboard" component={Dashboard} options={{ headerShown: false }} />
       </Stack.Navigator>
 
     </NavigationContainer>

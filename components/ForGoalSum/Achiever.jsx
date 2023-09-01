@@ -7,24 +7,58 @@ import { FONT } from "../../constants";
 import { SafeAreaView } from "react-native";
 import { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
+import CustomSelect from "../common/CustomSelect/CustomSelect";
 
 const Achiever = () => {
   const achieverGoalAreaData = useSelector(
     (state) => state.achieverGoalAreaData
   );
+  const goalSummaryData = useSelector((state) => state.goalSummaryData);
+  const goalArea = useSelector((state) => state.goalSummaryData.goalArea);
 
   const dispatch = useDispatch();
   const [achieverSelect, setAchieverSelect] = useState();
   const [subTypeData, setSubTypeData] = useState();
   const [subTypeSelection, setSubTypeSelection] = useState();
+  const [subSelectCustom, setSubSelectCustom] = useState();
+  const [subSelectCustomEnter, setSubSelectCustomEnter] = useState();
 
   const handleSubtypeClick = () => {
     setSubTypeSelection("");
+    setSubSelectCustomEnter('')
   };
   const handleOnAchieverSelectRemove = () => {
     setAchieverSelect("");
     setSubTypeSelection("");
+    setSubSelectCustomEnter('')
+    dispatch({
+      type: reduxAction.UPDATE_GOAL_SUMMARY_DATA,
+      payload: { ...goalSummaryData, goalSelectedSubType: '' },
+    });
   };
+
+  const handleOnSubSelectCustom = () => {
+    setSubSelectCustomEnter(subSelectCustom)
+    dispatch({
+      type: reduxAction.UPDATE_GOAL_SUMMARY_DATA,
+      payload: { ...goalSummaryData, goalSelectedSubOption: subSelectCustom },
+    });
+  }
+
+  const handleOnSubTypeSelection = (data) => {
+    setSubTypeSelection(data.value)
+    dispatch({
+      type: reduxAction.UPDATE_GOAL_SUMMARY_DATA,
+      payload: { ...goalSummaryData, goalSelectedSubOption: data.value },
+    });
+  }
+  const handleOnAchieverSelect = (data) => {
+    setAchieverSelect(data.value)
+    dispatch({
+      type: reduxAction.UPDATE_GOAL_SUMMARY_DATA,
+      payload: { ...goalSummaryData, goalSelectedSubType: data.value },
+    });
+  }
 
   useEffect(() => {
     fetch(
@@ -39,16 +73,34 @@ const Achiever = () => {
     );
   }, []);
 
+  useEffect(()=>{
+
+    if(goalArea !== 'Select'){
+      dispatch({
+        type: reduxAction.UPDATE_GOAL_SUMMARY_DATA,
+        payload: { ...goalSummaryData, goalSelectedSubType: '' },
+      });
+      dispatch({
+        type: reduxAction.UPDATE_GOAL_SUMMARY_DATA,
+        payload: { ...goalSummaryData, goalSelectedSubOption: '' },
+      });
+      setAchieverSelect("");
+      setSubTypeSelection("");
+      setSubSelectCustomEnter('')
+    }
+
+  } , [goalArea])
+
   useEffect(() => {
     const filteredObj = achieverGoalAreaData?.achiever?.filter(
-      (data) => data.type === achieverSelect
+      (data) => data.type === achieverSelect || goalSummaryData.goalSelectedSubType
     );
     filteredObj && setSubTypeData(filteredObj[0]?.subTypes);
-  }, [achieverSelect]);
+  }, [achieverSelect || goalSummaryData.goalSelectedSubType]);
 
   return (
     <SafeAreaView>
-      {achieverSelect && (
+      {(achieverSelect || goalSummaryData.goalSelectedSubType) && (
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -72,11 +124,11 @@ const Achiever = () => {
             <Text
               style={{ fontSize: 12, fontFamily: FONT.medium, color: "white" }}
             >
-              {achieverSelect}
+              {achieverSelect || goalSummaryData.goalSelectedSubType}
             </Text>
             <Ionicons name="close-circle" size={18} color="white" />
           </TouchableOpacity>
-          {subTypeSelection && (
+          {(subTypeSelection || subSelectCustomEnter) && (
             <TouchableOpacity
               style={{
                 backgroundColor: "#00A24E",
@@ -98,7 +150,7 @@ const Achiever = () => {
                   color: "white",
                 }}
               >
-                {subTypeSelection}
+                {subTypeSelection || subSelectCustomEnter}
               </Text>
               <Ionicons name="close-circle" size={18} color="white" />
             </TouchableOpacity>
@@ -108,35 +160,20 @@ const Achiever = () => {
       <View style={{ borderColor: "black", borderWidth: 1, borderRadius: 5 }}>
         {subTypeData ? (
           <View>
-            <Picker
-              selectedValue={subTypeSelection}
-              onValueChange={(itemValue, itemIndex) =>
-                setSubTypeSelection(itemValue)
-              }
-            >
-              <Picker.Item label="Select Next or Add" value="default" />
-              {subTypeData?.map((data, index) => (
-                <Picker.Item
-                  key={data.id}
-                  label={data.name}
-                  value={data.name}
-                />
-              ))}
-            </Picker>
-            <TextInput style={{ borderColor: "black", borderWidth: 1, borderRadius: 5 , margin:10 , padding:5 , fontSize:15 , fontFamily:FONT.medium , textAlign:'center' }} placeholder="Add" />
+            <CustomSelect
+          data={subTypeData?.map((data, index) => ({ label: data.name, value: data.name }))}
+          onChange={handleOnSubTypeSelection}
+        />
+            <TextInput style={{ borderColor: "black", borderWidth: 1, borderRadius: 5 , margin:10 , padding:5 , fontSize:15 , fontFamily:FONT.medium , textAlign:'center' }} 
+            onSubmitEditing={handleOnSubSelectCustom} 
+            onChangeText={text => setSubSelectCustom(text)}
+            placeholder="Add" />
           </View>
         ) : (
-          <Picker
-            selectedValue={achieverSelect}
-            onValueChange={(itemValue, itemIndex) =>
-              setAchieverSelect(itemValue)
-            }
-          >
-            <Picker.Item label="Select Goal Areas" value="default" />
-            {achieverGoalAreaData?.achiever?.map((data, index) => (
-              <Picker.Item key={index} label={data.type} value={data.type} />
-            ))}
-          </Picker>
+          <CustomSelect
+          data={achieverGoalAreaData?.achiever?.map((data, index) => ({ label: data.type, value: data.type }))}
+          onChange={handleOnAchieverSelect}
+        />
         )}
       </View>
     </SafeAreaView>

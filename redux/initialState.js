@@ -1,86 +1,132 @@
 export const initialState = {
-    settingGroupGoal: [{ groupName: null, name: null, email: null }],
+  settingGroupGoal: [{ groupName: null, name: null, email: null }],
 
-    settingmilestonedata: [{milestonename: null,milestonedesc: null,milestonestartdate: null,milestoneenddate: null,milestonecelebration: null,milestoneprogress:null}],
-
-    settingFamilyData: [{peoplefirstname: null,peoplelastname: null, peopleemail: null, peoplephno: null, reasontoshare1: null, peoplerole: null, peoplepermissions: null}],
-
-    settingReviewerData: [{reviewerfirstname: null, reviewerlastname: null, revieweremail: null, reviewerphno: null, reasontoshare2: null}],
-    
-    parameterdata: [
-      { id: 1,reviewfrequency:"", data: "Basic Needs (food, water, air, rest etc)" },
-      { id: 2,reviewfrequency:"", data: "Security and Stability (home and personal safety)" },
-      { id: 3,reviewfrequency:"", data: "Love and Belonging (relationships)" },
-      { id: 4,reviewfrequency:"", data: "Esteem" },
-      { id: 5,reviewfrequency:"", data: "Self Actualisation" },
+  settingmilestonedata: {
+    breakdown: 1,
+    expectedOutcome: "",
+    goalId: 2183,
+    milestone: [
+      {
+        action: 1,
+        name: null,
+        description: null,
+        startDate: null,
+        targetDate: null,
+        celebrations: null,
+        progress: 0,
+      },
     ],
+  },
 
-    userDetails: [],
-    userEmail: null,
-    influencerGoalAreaData: {},
-    achieverGoalAreaData: {},
-    goalId: null,
-    roleId: null,
-    sharegoalId: null,
-
-    milestonedata:{
-      milestonename:"",
-      milestonedesc:"",
-      milestonestartdate:"",
-      milestoneenddate:"",
-      milestonecelebration:"",
-      milestoneprogress:""
+  ShareGoalData: {
+    family: {
+      familyColleagueList: [],
     },
-
-    shareFamilyData:{
-      peoplefirstname:"",
-      peoplelastname:"",
-      peopleemail:"",
-      peoplephno:"",
-      reasontoshare1:"",
-      peoplerole:"",
-      peoplepermissions:""
+    goalId: 2184,
+    reviewer: {
+      parametersToReview: [],
+      reviewerList: [],
     },
+    shareGoalTo: 2,
+  },
 
-    shareReviewerData:{
-      reviewerfirstname:"",
-      reviewerlastname:"",
-      revieweremail:"",
-      reviewerphno:"",
-      reasontoshare2:""
+  settingFamilyData: [],
+
+  settingReviewerData: [],
+
+  parameterdata: [
+    {
+      id: 1,
+      frequency: "",
+      proofOfProgress: "",
+      parameter: "Basic Needs (food, water, air, rest etc)",
     },
-
-    goalSummaryData: {
-      dummyData: "",
-      goalPriority: "",
-      goalTitle: "",
-      goalArea: "",
-      goalAreaList: false,
-      goalSubTypeList: "",
-      chooseGoalArea: "",
-      enterGoalArea: "",
-      goalFor: "",
-      goalSelectedSubType: "",
-      groupName: "",
-      name: "",
-      email: "",
-      goalType: "",
-      recurring: "",
-      startDate: null,
-      targetDate: null,
-      goalDescription: "",
-      goalSelectedSubOption: "",
+    {
+      id: 2,
+      frequency: "",
+      proofOfProgress: "",
+      parameter: "Security and Stability (home and personal safety)",
     },
-    goalDialogueOptionsForInfluencer: [],
-    roleName: "",
-    userCurrentPage: "",
-    forgotPassword: [],
-    showNdisAgreement: false,
-    showTermsNConditions: false,
-    ndisAgreementSigned: false,
-    ndisTCSigned: false,
-    showConflictOfInterest: false,
-    showConfirmationDialog: {show: false, text: '', onOkClick: ''},
+    {
+      id: 3,
+      frequency: "",
+      proofOfProgress: "",
+      parameter: "Love and Belonging (relationships)",
+    },
+    { id: 4, frequency: "", proofOfProgress: "", parameter: "Esteem" },
+    {
+      id: 5,
+      frequency: "",
+      proofOfProgress: "",
+      parameter: "Self Actualisation",
+    },
+  ],
 
-    expectedoutcome:"",
-  };
+  userDetails: [],
+  userEmail: null,
+  influencerGoalAreaData: {},
+  achieverGoalAreaData: {},
+  goalId: null,
+  roleId: null,
+  sharegoalId: null,
+
+  milestonedata: {
+    milestonename: "",
+    milestonedesc: "",
+    milestonestartdate: "",
+    milestoneenddate: "",
+    milestonecelebration: "",
+  },
+
+  shareFamilyData: {
+    peoplefirstname: "",
+    peoplelastname: "",
+    peopleemail: "",
+    peoplephno: "",
+    reasontoshare1: "",
+    peoplerole: "",
+    peoplepermissions: "",
+  },
+
+  shareReviewerData: {
+    reviewerfirstname: "",
+    reviewerlastname: "",
+    revieweremail: "",
+    reviewerphno: "",
+    reasontoshare2: "",
+  },
+
+  goalSummaryData: {
+    dummyData: "",
+    goalPriority: "",
+    goalTitle: "",
+    goalArea: "",
+    goalAreaList: false,
+    goalSubTypeList: "",
+    chooseGoalArea: "",
+    enterGoalArea: "",
+    goalFor: "",
+    goalSelectedSubType: "",
+    groupName: "",
+    name: "",
+    email: "",
+    goalType: "",
+    recurring: "",
+    startDate: null,
+    targetDate: null,
+    goalDescription: "",
+    goalSelectedSubOption: "",
+  },
+  goalDialogueOptionsForInfluencer: [],
+  roleName: "",
+  userCurrentPage: "",
+  forgotPassword: [],
+  showNdisAgreement: false,
+  showTermsNConditions: false,
+  ndisAgreementSigned: false,
+  ndisTCSigned: false,
+  showConflictOfInterest: false,
+  showConfirmationDialog: { show: false, text: "", onOkClick: "" },
+
+  expectedoutcome: "",
+};

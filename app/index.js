@@ -4,7 +4,7 @@ import { LogBox, Text, View } from "react-native";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import * as Font from "expo-font";
-import { Provider } from "react-redux";
+import { Provider, useSelector } from "react-redux";
 import store from "../redux/store";
 import Toast from 'react-native-toast-message';
 import { NativeBaseProvider } from "native-base";
