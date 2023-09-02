@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Text, View, SafeAreaView, TextInput } from "react-native";
 import { RadioButton } from "react-native-paper";
 import { Ionicons } from "@expo/vector-icons";
@@ -441,6 +441,7 @@ const ShareGoal = ({ navigation }) => {
   };
 
   const handleOnSave = async () => {
+
     var myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
     var requestOptions = {
@@ -457,17 +458,6 @@ const ShareGoal = ({ navigation }) => {
       .then((res) =>
         res.json().then((result) => {
           if (result.responseStatus === 200) {
-            dispatch({
-              type: reduxAction.UPDATE_FAMILYDATA,
-              payload: {
-                ...ShareGoalData,
-                family: { familyColleagueList: familyData },
-                reviewer: {
-                  parametersToReview: parameterdata,
-                  reviewerList: reviewerData,
-                },
-              },
-            });
             showToast();
             navigation.navigate('Dashboard');
 
@@ -480,7 +470,21 @@ const ShareGoal = ({ navigation }) => {
       .catch((err) => console.log(err));
   };
 
-  // console.log(ShareGoalData);
+  useEffect(()=>{
+
+    dispatch({
+      type: reduxAction.UPDATE_FAMILYDATA,
+      payload: {
+        ...ShareGoalData,
+        family: { familyColleagueList: familyData },
+        reviewer: {
+          parametersToReview: parameterdata,
+          reviewerList: reviewerData,
+        },
+      },
+    });
+
+  },[reviewerData])
 
   return (
     <ScrollView className="p-2 bg-white">

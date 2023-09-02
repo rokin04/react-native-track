@@ -111,8 +111,8 @@ function Goal( {navigation} ) {
         <Stack.Screen name="Forgot" component={ForgetPassword} />
         <Stack.Screen name="EnterOTP" component={EnterOTP} />
         <Stack.Screen name="ResetPassword" component={ResetPassword} /> */}
-        <Stack.Screen name="Goal" component={Goal} options={{ headerStyle: { backgroundColor: "#019FFE", }, headerTintColor: "white" }} />
         <Stack.Screen name="Dashboard" component={Dashboard} options={{ headerShown: false }} />
+        <Stack.Screen name="Goal" component={Goal} options={{ headerStyle: { backgroundColor: "#019FFE", }, headerTintColor: "white" }} />
       </Stack.Navigator>
 
     </NavigationContainer>
