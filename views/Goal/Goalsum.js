@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -19,8 +19,9 @@ import { DatePickerModal } from "react-native-paper-dates";
 import { useDispatch, useSelector } from "react-redux";
 import reduxAction from "../../redux/action";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
-import Toast , { BaseToast } from 'react-native-toast-message';
+import Toast, { BaseToast } from "react-native-toast-message";
 import Achiever from "../../components/ForGoalSum/Achiever";
+import CustomSelect  from '../../components/common/CustomSelect/CustomSelect';
 
 const Goalsum = () => {
   const [nextPage, setNaxtPage] = useState(false);
@@ -29,11 +30,12 @@ const Goalsum = () => {
   const goalSummaryData = useSelector((state) => state.goalSummaryData);
   const settingGroupGoal = useSelector((state) => state.settingGroupGoal);
   const GoalFordata = useSelector((state) => state.settingGroupGoal);
+  const [customGoalArea, setCustomGoalArea] = useState();
   const [selectedStartDate, setSelectedStartDate] = useState(null);
   const [selectedEndDate, setSelectedEndDate] = useState(null);
   const [isDatePicker1Visible, setDatePicker1Visibility] = useState(false);
   const [isDatePicker2Visible, setDatePicker2Visibility] = useState(false);
-  const [RecurringFor, setRecurringFor] = useState('')
+  const [RecurringFor, setRecurringFor] = useState("");
 
   const {
     goalPriority,
@@ -43,6 +45,7 @@ const Goalsum = () => {
     goalFor,
     shareGoalTo,
     goalSelectedSubType,
+    goalSelectedSubOption,
     name,
     email,
     groupName,
@@ -71,7 +74,7 @@ const Goalsum = () => {
   const handleStartDate = (date) => {
     setSelectedStartDate(date);
     hideDatePicker();
-    const formatedDate = formatDate(date)
+    const formatedDate = formatDate(date);
     dispatch({
       type: reduxAction.UPDATE_GOAL_SUMMARY_DATA,
       payload: { ...goalSummaryData, startDate: formatedDate },
@@ -81,7 +84,7 @@ const Goalsum = () => {
   const handleEndDate = (date) => {
     setSelectedEndDate(date);
     hideDatePicker();
-    const formatedDate = formatDate(date)
+    const formatedDate = formatDate(date);
     dispatch({
       type: reduxAction.UPDATE_GOAL_SUMMARY_DATA,
       payload: { ...goalSummaryData, targetDate: formatedDate },
@@ -95,19 +98,25 @@ const Goalsum = () => {
     return date.toLocaleDateString(undefined, options);
   };
 
+  const handleOnremoveSubSelect = () => {
+    dispatch({
+      type: reduxAction.UPDATE_GOAL_SUMMARY_DATA,
+      payload: { ...goalSummaryData, goalSelectedSubOption: "" },
+    });
+  };
+
   const showToast = () => {
     Toast.show({
-      type: 'success',
-      text1: 'Goal-Summary saved successfully!',
+      type: "success",
+      text1: "Goal-Summary saved successfully!",
     });
-  }
+  };
   const showErrorToast = () => {
-      Toast.show({
-        type: 'tomatoToast',
-        props: { text: 'Bad Request!' }
-      });
-
-  }
+    Toast.show({
+      type: "tomatoToast",
+      props: { text: "Bad Request!" },
+    });
+  };
 
   const handleOnSetGoalTitle = (e) => {
     dispatch({
@@ -135,6 +144,15 @@ const Goalsum = () => {
       type: reduxAction.UPDATE_GOAL_SUMMARY_DATA,
       payload: { ...goalSummaryData, enterGoalArea: e },
     });
+  };
+
+  const handleOnEnterGoalAreaSubmit = () => {
+    dispatch({
+      type: reduxAction.UPDATE_GOAL_SUMMARY_DATA,
+      payload: { ...goalSummaryData, enterGoalArea: enterGoalArea },
+    });
+
+    setCustomGoalArea(enterGoalArea);
   };
 
   const handleOnGoalFor = (e) => {
@@ -193,14 +211,16 @@ const Goalsum = () => {
   };
 
   const handleOnDeletePerson = (index) => {
-    const filteredData = GoalFordata.filter( data =>  data?.name !== GoalFordata[index]?.name )  
+    const filteredData = GoalFordata.filter(
+      (data) => data?.name !== GoalFordata[index]?.name
+    );
     dispatch({
       type: reduxAction.DEL_GROUP_PERSON,
       payload: filteredData,
     });
-  }
- 
-  const handleOnSave = (next) => () => {
+  };
+
+  const handleOnSave = () => () => {
     var myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
     var requestOptions = {
@@ -209,11 +229,11 @@ const Goalsum = () => {
       body: JSON.stringify({
         title: goalTitle,
         priority: goalPriority,
-        area: goalArea,
-        area_custom: '',
+        area: { name: goalSelectedSubOption, id: 114 },
+        area_custom: enterGoalArea,
         goal_for: goalFor,
         forSomeoneElse: GoalFordata,
-        recurring:goalType,
+        recurring: goalType,
         start_date: startDate,
         target_date: targetDate,
         description: goalDescription,
@@ -222,318 +242,377 @@ const Goalsum = () => {
     };
     console.log(requestOptions.body);
 
-    fetch(`http://dev.trackability.net.au:8082/goals/summary/save/${2165}`, requestOptions)
+    fetch(
+      `http://dev.trackability.net.au:8082/goals/summary/save/${2165}`,
+      requestOptions
+    )
       .then((res) =>
         res.json().then((data) => {
           if (data.responseStatus === 200) {
-            showToast()
-            if (next === "next") {
-              navigate("/trackability/goal/outcomes");
-            }
+            showToast();
+              dispatch({
+                type:reduxAction.CHANGE_GOAL_PAGE,
+                payload: 1
+              })
           } else if (data.responseStatus === 400) {
-            showErrorToast();
+            console.log("response status 400");
           }
         })
       )
-      .catch(showErrorToast());
+      .catch(console.log("hay"));
   };
 
+  useEffect(() => {
+    if (goalArea === "Select") {
+      setCustomGoalArea("");
+      dispatch({
+        type: reduxAction.UPDATE_GOAL_SUMMARY_DATA,
+        payload: { ...goalSummaryData, enterGoalArea: "" },
+      });
+    } else {
+      dispatch({
+        type: reduxAction.UPDATE_GOAL_SUMMARY_DATA,
+        payload: { ...goalSummaryData, goalSelectedSubType: "" },
+      });
+      dispatch({
+        type: reduxAction.UPDATE_GOAL_SUMMARY_DATA,
+        payload: { ...goalSummaryData, goalSelectedSubOption: "" },
+      });
+    }
+  }, [goalArea]);
+
   return (
-    <>
-      {!nextPage ? (
-        <ScrollView style={{backgroundColor:'white'}} >
-            <SafeAreaView className="flex flex-col gap-10 p-2" >
+    <ScrollView className="p-2 mb-10" style={{ backgroundColor: "white" }}>
+      <SafeAreaView className="flex flex-col justify-between gap-5 mb-5">
+        <View>
+          <Text className="text-[15px] font-popMedium m-1">Goal Title</Text>
+          <TextInput
+            onChangeText={handleOnSetGoalTitle}
+            value={goalTitle}
+            className="border p-3 text-[15px] rounded font-popMedium"
+          />
+        </View>
+        <View>
+          <Text className="text-[15px] font-popMedium m-1">Goal Priorty</Text>
           <View>
-            <Text className="text-[15px] font-popMedium m-1">Goal Title</Text>
-            <TextInput
-              onChangeText={handleOnSetGoalTitle}
-              value={goalTitle}
-              className="border p-3 text-[15px] rounded"
-            />
-          </View>
-          <View>
-            <Text className="text-[15px] font-popMedium m-1">Goal Priorty</Text>
-            <View>
-              <RadioButton.Group
-                onValueChange={handleOnSetGoalPriority}
-                value={goalPriority}
-              >
-                <View className="flex flex-row">
-                  <View className="flex flex-row justify-center items-center">
-                    <RadioButton value="High" />
-                    <Text className="text-sm font-popMedium">High</Text>
-                  </View>
-                  <View className="flex flex-row justify-center items-center">
-                    <RadioButton value="Medium" />
-                    <Text className="text-sm font-popMedium">Medium</Text>
-                  </View>
-                  <View className="flex flex-row justify-center items-center">
-                    <RadioButton value="Low" />
-                    <Text className="text-sm font-popMedium">Low</Text>
-                  </View>
+            <RadioButton.Group
+              onValueChange={handleOnSetGoalPriority}
+              value={goalPriority}
+            >
+              <View className="flex flex-row">
+                <View className="flex flex-row justify-center items-center">
+                  <RadioButton.Android value="High" />
+                  <Text className="text-sm font-popMedium">High</Text>
                 </View>
-              </RadioButton.Group>
-            </View>
-          </View>
-          <View>
-            <Text className="text-[15px] font-popMedium m-1">
-              Trackability has a set of pre-configured goal areas for you to
-              select. Do you want to select one of them or set your own goal ?
-            </Text>
-            <View>
-              <RadioButton.Group
-                onValueChange={handleOnSetGoalArea}
-                value={goalArea ? goalArea : "Enter"}
-              >
-                <View className="flex flex-row ">
-                  <View className="flex flex-row justify-center items-center">
-                    <RadioButton value="Select" />
-                    <Text className="text-sm font-popMedium">
-                      Select Goal Area
-                    </Text>
-                  </View>
-                  <View className="flex flex-row justify-center items-center">
-                    <RadioButton value="Enter" />
-                    <Text className="text-sm font-popMedium">
-                      Enter Your Goal Area
-                    </Text>
-                  </View>
+                <View className="flex flex-row justify-center items-center">
+                  <RadioButton.Android value="Medium" />
+                  <Text className="text-sm font-popMedium">Medium</Text>
                 </View>
-              </RadioButton.Group>
-
-              {goalArea === "Select" ? (
-              <View ><Achiever /></View> 
-              ) : (
-                <View>
-                  <Text className="text-[15px] font-popMedium m-1">
-                    Enter your area of goal
-                  </Text>
-                  <TextInput
-                    onChangeText={handleOnEnterGoalArea}
-                    value={enterGoalArea}
-                    className="border p-3 text-[15px] rounded"
-                  />
+                <View className="flex flex-row justify-center items-center">
+                  <RadioButton.Android value="Low" />
+                  <Text className="text-sm font-popMedium">Low</Text>
                 </View>
-              )}
-            </View>
-          </View>
-          <View className="">
-            <Text className="text-[15px] font-popMedium m-1">
-              Are you setting this goal for?
-            </Text>
-            <View>
-              <RadioButton.Group
-                onValueChange={handleOnGoalFor}
-                value={goalFor}
-              >
-                <View className="flex flex-row py-1 justify-evenly">
-                  <View className="flex flex-row justify-center items-center">
-                    <RadioButton value="Self" />
-                    <Text className="text-sm font-popMedium">Self</Text>
-                  </View>
-                  <View className="flex flex-row justify-center items-center">
-                    <RadioButton value="Someone" />
-                    <Text className="text-sm font-popMedium">Someone Else</Text>
-                  </View>
-                  <View className="flex flex-row justify-center items-center">
-                    <RadioButton value="Group" />
-                    <Text className="text-sm font-popMedium">For Group</Text>
-                  </View>
-                </View>
-              </RadioButton.Group>
-            </View>
-          </View>
-
-          <TouchableOpacity
-            onPress={() => {
-              setNaxtPage(true);
-            }}
-          >
-            <View 
-            className="w-16 bg-blue-400 h-[60px] ml-auto rounded-full flex justify-center items-center">
-            <Ionicons name="chevron-forward-outline" size={30} color="white" />
-            </View>
-          </TouchableOpacity>
-
-            </SafeAreaView>
-          </ScrollView>
-      ) : (
-        <ScrollView style={{backgroundColor:'white'}} >
-            <SafeAreaView className="flex flex-col justify-evenly h-[80vh] p-1">
-              {goalFor !== "Self" ? (
-                <View>
-                  <View className="flex flex-row justify-evenly items-center">
-                    <TextInput
-                      className="border p-2 text-l rounded w-2/5 placeholder:font-popMedium "
-                      placeholder="Name"
-                      onChangeText={handleOnAddPersonName}
-                    />
-                    <TextInput
-                      className="border p-2 text-l rounded w-2/5 placeholder:font-popMedium "
-                      placeholder="Email"
-                      onChangeText={handleOnAddPersonEmail}
-                    />
-                    <TouchableOpacity onPress={handleAddPerson}>
-                      <Ionicons name="add-circle-outline" size={40} color="gray" />
-                    </TouchableOpacity>
-                  </View>
-                  <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ flexDirection: 'row', backgroundColor: '#FFFFFF' }}>
-
-                  <View className="flex flex-row gap-2 m-1 flex-wrap">
-                    {GoalFordata.map((data , index) => {
-                      return (
-                        data.name !== null && 
-
-                        <TouchableOpacity onPress={()=>{handleOnDeletePerson(index)}} key={index} >
-                          <View className="rounded-xl p-[2px] px-5 bg-gray-200 flex flex-row items-center">
-                            <Text className="font-popMedium "> {data.name} </Text>
-                            <Ionicons name="close-circle" size={20} color="gray" />
-                          </View>
-                        </TouchableOpacity>
-                      );
-                    })}
-                  </View>
-          </ScrollView>
-
-                </View>
-              ) : null}
-
-              <View>
-                <Text className="text-[15px] font-popMedium mx-2">Goal Type</Text>
-                <View>
-                  <RadioButton.Group
-                    onValueChange={handleOnSetGoalType}
-                    value={goalType}
-                  >
-                    <View className="flex flex-row pb-2">
-                      <View className="flex flex-row justify-center items-center">
-                        <RadioButton value="Recurring" />
-                        <Text className="text-sm font-popMedium">Recurring</Text>
-                      </View>
-                      <View className="flex flex-row justify-center items-center">
-                        <RadioButton value="One-Time" />
-                        <Text className="text-sm font-popMedium">
-                          One-Time Achievement
-                        </Text>
-                      </View>
-                    </View>
-                  </RadioButton.Group>
-                </View>
-                {goalType === "Recurring" ? (
-                  <View className="border rounded text-2xl ">
-                    <Picker 
-                    selectedValue={RecurringFor}
-                    onValueChange={(item , index)=>{
-                      setRecurringFor(item)
-                    }} >
-                      <Picker.Item label="Daily" value="Daily" />
-                      <Picker.Item label="Weekly" value="Weekly" />
-                      <Picker.Item label="Monthly" value="Monthly" />
-                      <Picker.Item label="Quarterly" value="Quarterly" />
-                    </Picker>
-                  </View>
-                ) : null}
-                {goalType && (
-                  <View className="pt-3 flex justify-evenly flex-row gap-5 px-3">
-                    <TouchableOpacity
-                      onPress={showDatePicker1}
-                      uppercase={false}
-                      mode="contained"
-                      className="h-10 w-1/2"
-                    >
-                      <View
-                        className=" flex flex-row justify-evenly items-center border h-full text-l rounded w-full placeholder:font-popMedium"
-                        placeholder="Name"
-                      >
-                        <Text className="text-base font-popMedium font-light">
-                          {selectedStartDate
-                            ? formatDate(selectedStartDate)
-                            : "Start Date"}
-                        </Text>
-                        <Ionicons name="calendar" size={25} color="gray" />
-                      </View>
-                    </TouchableOpacity>
-                    <DateTimePickerModal
-                      isVisible={isDatePicker1Visible}
-                      mode="date"
-                      onConfirm={handleStartDate}
-                      onCancel={hideDatePicker}
-                    />
-                    <TouchableOpacity
-                      onPress={showDatePicker2}
-                      uppercase={false}
-                      mode="contained"
-                      className="h-10 w-1/2"
-                    >
-                      <View
-                        className=" flex flex-row justify-evenly items-center border h-full text-l rounded w-full placeholder:font-popMedium"
-                        placeholder="Name"
-                      >
-                        <Text className="text-base font-popMedium font-light">
-                          {selectedEndDate
-                            ? formatDate(selectedEndDate)
-                            : "End Date"}
-                        </Text>
-                        <Ionicons name="calendar" size={25} color="gray" />
-                      </View>
-                    </TouchableOpacity>
-                    <DateTimePickerModal
-                      isVisible={isDatePicker2Visible}
-                      mode="date"
-                      onConfirm={handleEndDate}
-                      onCancel={hideDatePicker}
-                    />
-                  </View>
-                )}
               </View>
+            </RadioButton.Group>
+          </View>
+        </View>
+        <View>
+          <View className="hidden">
+            <Achiever />
+          </View>
+          <Text className="text-[15px] font-popMedium m-1">
+            Trackability has a set of pre-configured goal areas for you to
+            select. Do you want to select one of them or set your own goal ?
+          </Text>
+          <View>
+            <RadioButton.Group
+              onValueChange={handleOnSetGoalArea}
+              value={goalArea}
+            >
+              <View className="flex flex-row ">
+                <View className="flex flex-row justify-center items-center">
+                  <RadioButton value="Select" />
+                  <Text className="text-sm font-popMedium">
+                    Select Goal Area
+                  </Text>
+                </View>
+                <View className="flex flex-row justify-center items-center">
+                  <RadioButton value="Enter" />
+                  <Text className="text-sm font-popMedium">
+                    Enter Your Goal Area
+                  </Text>
+                </View>
+              </View>
+            </RadioButton.Group>
 
-                <Text className="text-[15px] font-popMedium mx-2">
-                  Goal Summary
+            {goalSelectedSubOption || customGoalArea ? (
+              customGoalArea ? (
+                <Text className="text-lg font-popMedium text-center capitalize">
+                  {customGoalArea}
+                </Text>
+              ) : (
+                <View className="flex justify-center flex-col items-center gap-2 mt-2">
+                  <TouchableOpacity className="flex flex-row items-center gap-x-1">
+                    <Text className="text-xs font-popMedium text-center capitalize">
+                      {goalSelectedSubType}
+                    </Text>
+                  </TouchableOpacity>
+                  <Ionicons name="arrow-down" size={30} color="green" />
+                  <TouchableOpacity
+                    onPress={handleOnremoveSubSelect}
+                    className="flex flex-row items-center gap-x-1"
+                  >
+                    <Text className="text-xs font-popMedium text-center capitalize">
+                      {goalSelectedSubOption}
+                    </Text>
+                    <Ionicons name="close-circle" size={15} color="gray" />
+                  </TouchableOpacity>
+                </View>
+              )
+            ) : goalArea === "Select" ? (
+              <View>
+                <Achiever />
+              </View>
+            ) : goalArea === "Enter" ? (
+              <View>
+                <Text className="text-[15px] font-popMedium m-1">
+                  Enter your area of goal``
                 </Text>
                 <TextInput
-                  onChangeText={handleOnGoalDescription}
-                  value={goalDescription}
-                  multiline
-                  className="border min-h-[13vh] p-1 my-2 rounded text-[15px] font-popMedium"
-                ></TextInput>
-
-              <View>
-                <Text className="text-[15px] font-popMedium mx-2">
-                  Share Your Goal to
-                </Text>
-                <View>
-                  <RadioButton.Group
-                    onValueChange={handleOnShareGoalTo}
-                    value={shareGoalTo}
-                  >
-                    <View className="flex flex-row">
-                      <View className="flex flex-row justify-center items-center">
-                        <RadioButton value="fam/Friends" />
-                        <Text className="text-sm font-popMedium">
-                          Family Friends/Colleagues
-                        </Text>
-                      </View>
-                      <View className="flex flex-row justify-center items-center">
-                        <RadioButton value="Reviewer" />
-                        <Text className="text-sm font-popMedium">Reviewer</Text>
-                      </View>
-                    </View>
-                  </RadioButton.Group>
+                  onChangeText={handleOnEnterGoalArea}
+                  onSubmitEditing={handleOnEnterGoalAreaSubmit}
+                  value={enterGoalArea}
+                  className="border p-3 text-[15px] rounded font-popMedium"
+                />
+              </View>
+            ) : null}
+          </View>
+        </View>
+        <View className="">
+          <Text className="text-[15px] font-popMedium m-1">
+            Are you setting this goal for?
+          </Text>
+          <View>
+            <RadioButton.Group onValueChange={handleOnGoalFor} value={goalFor}>
+              <View className="flex flex-row py-1 justify-evenly">
+                <View className="flex flex-row justify-center items-center">
+                  <RadioButton.Android value="Self" />
+                  <Text className="text-sm font-popMedium">Self</Text>
+                </View>
+                <View className="flex flex-row justify-center items-center">
+                  <RadioButton.Android value="Someone" />
+                  <Text className="text-sm font-popMedium">Someone Else</Text>
+                </View>
+                <View className="flex flex-row justify-center items-center">
+                  <RadioButton.Android value="Group" />
+                  <Text className="text-sm font-popMedium">For Group</Text>
                 </View>
               </View>
-
-              <TouchableOpacity
-                onPress={handleOnSave()}
-                className="w-1/4  p-2 bg-blue-400 ml-auto rounded-[15px]"
-              >
-                <Text className="text-[15px] text-center font-popMedium text-white font-semibold">
-                  Save
-                </Text>
+            </RadioButton.Group>
+          </View>
+        </View>
+        {goalFor === "Self" ? null : goalFor === "Someone" ? (
+          <View>
+            <View className="flex-1 flex-row space-between gap-2 pr-2">
+              <TextInput
+                className="border p-2 text-l rounded w-2/5 placeholder:font-popMedium "
+                placeholder="Name"
+                onChangeText={handleOnAddPersonName}
+              />
+              <TextInput
+                className="border p-2 text-l rounded w-2/5 placeholder:font-popMedium "
+                placeholder="Email"
+                onChangeText={handleOnAddPersonEmail}
+              />
+              <TouchableOpacity onPress={handleAddPerson}>
+                <Ionicons name="add-circle-outline" size={40} color="gray" />
               </TouchableOpacity>
-            </SafeAreaView>
-        </ScrollView>
-      )}
-    </>
+            </View>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              style={{ flexDirection: "row", backgroundColor: "#FFFFFF" }}
+            >
+              <View className="flex flex-row gap-2 m-1 flex-wrap">
+                {GoalFordata.map((data, index) => {
+                  return (
+                    data.name !== null && (
+                      <TouchableOpacity
+                        onPress={() => {
+                          handleOnDeletePerson(index);
+                        }}
+                        key={index}
+                      >
+                        <View className="rounded-xl p-[2px] px-5 bg-gray-200 flex flex-row items-center">
+                          <Text className="font-popMedium "> {data.name} </Text>
+                          <Ionicons
+                            name="close-circle"
+                            size={20}
+                            color="gray"
+                          />
+                        </View>
+                      </TouchableOpacity>
+                    )
+                  );
+                })}
+              </View>
+            </ScrollView>
+          </View>
+        ) : goalFor === 'Group' ? (
+          <View>
+            <View className="flex-1 flex-row space-between gap-2 pr-2">
+              <TextInput
+                className="border p-2 text-l w-1/4 rounded placeholder:font-popMedium "
+                placeholder="Group Name"
+                onChangeText={handleOnAddPersonName}
+              />
+              <TextInput
+                className="border p-2 text-l w-1/4 rounded placeholder:font-popMedium "
+                placeholder="Name"
+                onChangeText={handleOnAddPersonEmail}
+              />
+              <TextInput
+                className="border p-2 text-l w-1/3 rounded placeholder:font-popMedium "
+                placeholder="Email"
+                onChangeText={handleOnAddPersonEmail}
+              />
+              <TouchableOpacity onPress={handleAddPerson}>
+                <Ionicons name="add-circle-outline" size={40} color="gray" />
+              </TouchableOpacity>
+            </View>
+          </View>
+        ) : null}
+
+        <View>
+          <Text className="text-[15px] font-popMedium mx-2">Goal Type</Text>
+          <View>
+            <RadioButton.Group
+              onValueChange={handleOnSetGoalType}
+              value={goalType}
+            >
+              <View className="flex flex-row pb-2">
+                <View className="flex flex-row justify-center items-center">
+                  <RadioButton.Android value="Recurring" />
+                  <Text className="text-sm font-popMedium">Recurring</Text>
+                </View>
+                <View className="flex flex-row justify-center items-center">
+                  <RadioButton.Android value="One-Time" />
+                  <Text className="text-sm font-popMedium">
+                    One-Time Achievement
+                  </Text>
+                </View>
+              </View>
+            </RadioButton.Group>
+          </View>
+          {goalType === "Recurring" ? (
+            <View className="border rounded text-2xl ">
+              <CustomSelect
+                data={[
+                  { label: "Daily", value: "daily" },
+                  { label: "Weekly", value: "weekly" },
+                  { label: "Monthly", value: "month" },
+                  { label: "Yearly", value: "yearly" },
+                ]}
+              />
+            </View>
+          ) : null}
+          {goalType && (
+            <View className="pt-3 flex justify-evenly flex-row gap-5 px-3">
+              <TouchableOpacity
+                onPress={showDatePicker1}
+                uppercase={false}
+                mode="contained"
+                className="h-10 w-1/2"
+              >
+                <View
+                  className=" flex flex-row justify-evenly items-center border h-full text-l rounded w-full placeholder:font-popMedium"
+                  placeholder="Name"
+                >
+                  <Text className="text-base font-popMedium font-light">
+                    {selectedStartDate
+                      ? formatDate(selectedStartDate)
+                      : "Start Date"}
+                  </Text>
+                  <Ionicons name="calendar" size={25} color="gray" />
+                </View>
+              </TouchableOpacity>
+              <DateTimePickerModal
+                isVisible={isDatePicker1Visible}
+                mode="date"
+                onConfirm={handleStartDate}
+                onCancel={hideDatePicker}
+              />
+              <TouchableOpacity
+                onPress={showDatePicker2}
+                uppercase={false}
+                mode="contained"
+                className="h-10 w-1/2"
+              >
+                <View
+                  className=" flex flex-row justify-evenly items-center border h-full text-l rounded w-full placeholder:font-popMedium"
+                  placeholder="Name"
+                >
+                  <Text className="text-base font-popMedium font-light">
+                    {selectedEndDate ? formatDate(selectedEndDate) : "End Date"}
+                  </Text>
+                  <Ionicons name="calendar" size={25} color="gray" />
+                </View>
+              </TouchableOpacity>
+              <DateTimePickerModal
+                isVisible={isDatePicker2Visible}
+                mode="date"
+                onConfirm={handleEndDate}
+                onCancel={hideDatePicker}
+              />
+            </View>
+          )}
+        </View>
+
+        <Text className="text-[15px] font-popMedium mx-2">Goal Summary</Text>
+        <TextInput
+          onChangeText={handleOnGoalDescription}
+          value={goalDescription}
+          multiline
+          className="border min-h-[13vh] p-1 my-2 rounded text-[15px] font-popMedium"
+        ></TextInput>
+
+        {/* <View>
+              <Text className="text-[15px] font-popMedium mx-2">
+                Share Your Goal to
+              </Text>
+              <View>
+                <RadioButton.Group
+                  onValueChange={handleOnShareGoalTo}
+                  value={shareGoalTo}
+                >
+                  <View className="flex flex-row">
+                    <View className="flex flex-row justify-center items-center">
+                      <RadioButton value="fam/Friends" />
+                      <Text className="text-sm font-popMedium">
+                        Family Friends/Colleagues
+                      </Text>
+                    </View>
+                    <View className="flex flex-row justify-center items-center">
+                      <RadioButton value="Reviewer" />
+                      <Text className="text-sm font-popMedium">Reviewer</Text>
+                    </View>
+                  </View>
+                </RadioButton.Group>
+              </View>
+            </View> */}
+
+        <View className="ml-auto">
+          <TouchableOpacity
+            onPress={handleOnSave()}
+            className="w-1/4 p-2 bg-blue-400 ml-auto rounded-[15px]"
+          >
+            <Text className="text-[15px] text-center font-popMedium text-white font-semibold">
+              Save
+            </Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    </ScrollView>
   );
 };
 

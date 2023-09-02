@@ -82,6 +82,12 @@ const reducer = (state = initialState, action) => {
     case reduxAction.UPDATE_PARAMETER_DATA:
       return { ...state, parameterdata: action.payload };
 
+    case reduxAction.CHANGE_GOAL_PAGE:
+      return { ...state, changeGoalPage: action.payload};
+
+    case reduxAction.UPDATE_FAMILYDATA:
+      return { ...state, ShareGoalData: action.payload};
+
     default:
       return { ...state };
   }
