@@ -10,7 +10,7 @@ import {
   ScrollView,
 } from "react-native";
 import { COLORS, SHADOWS, SIZES, IMAGES, FONT, ICONS } from "../../constants";
-import { TextInput } from "react-native";
+import { TextInput  , ActivityIndicator } from "react-native";
 import { Button } from "react-native";
 import { RadioButton } from "react-native-paper";
 import { Picker } from "@react-native-picker/picker";
@@ -23,11 +23,13 @@ import Toast, { BaseToast } from "react-native-toast-message";
 import Achiever from "../../components/ForGoalSum/Achiever";
 import CustomSelect  from '../../components/common/CustomSelect/CustomSelect';
 
-const Goalsum = () => {
+
+const Goalsum = ({navigation}) => {
   const [nextPage, setNaxtPage] = useState(false);
 
   const dispatch = useDispatch();
   const goalSummaryData = useSelector((state) => state.goalSummaryData);
+  const goalSummaryDataCollection = useSelector((state) => state.goalSummaryDataCollection);
   const settingGroupGoal = useSelector((state) => state.settingGroupGoal);
   const GoalFordata = useSelector((state) => state.settingGroupGoal);
   const [customGoalArea, setCustomGoalArea] = useState();
@@ -36,6 +38,7 @@ const Goalsum = () => {
   const [isDatePicker1Visible, setDatePicker1Visibility] = useState(false);
   const [isDatePicker2Visible, setDatePicker2Visibility] = useState(false);
   const [RecurringFor, setRecurringFor] = useState("");
+  const [loading ,setLoading] = useState(false)
 
   const {
     goalPriority,
@@ -240,27 +243,49 @@ const Goalsum = () => {
       }),
       redirect: "follow",
     };
-    console.log(requestOptions.body);
 
-    fetch(
-      `http://dev.trackability.net.au:8082/goals/summary/save/${2165}`,
-      requestOptions
-    )
-      .then((res) =>
-        res.json().then((data) => {
-          if (data.responseStatus === 200) {
-            showToast();
-              dispatch({
-                type:reduxAction.CHANGE_GOAL_PAGE,
-                payload: 1
-              })
-          } else if (data.responseStatus === 400) {
-            console.log("response status 400");
-          }
-        })
-      )
-      .catch(console.log("hay"));
+    // console.log(JSON.parse(requestOptions.body));
+
+    const checkValues = Object.keys(JSON.parse(requestOptions.body)).every((key, value)=> {
+      if (goalSelectedSubOption !== "" && key === 'area_custom') {
+        return true;
+      }
+      return JSON.parse(requestOptions.body)[key] !== "";
+    })
+
+      if(checkValues){
+        fetch(
+          `http://dev.trackability.net.au:8082/goals/summary/save/${2165}`,
+          requestOptions
+        )
+          .then((res) =>
+            res.json().then((data) => {
+              if (data.responseStatus === 200) {
+    
+                const goalData = JSON.parse(requestOptions.body)
+    
+                showToast();
+                  dispatch({
+                    type:reduxAction.CHANGE_GOAL_PAGE,
+                    payload: 1
+                  })
+                  dispatch({
+                    type:reduxAction.ADD_GOALSUM_COLLECTION,
+                    payload: [ ...goalSummaryDataCollection , goalData ]
+                  })
+              } else if (data.responseStatus === 400) {
+                console.log(data.responseMessage );
+                Alert.alert(data.responseMessage );
+              }
+            })
+          )
+          .catch(console.log("hay"));
+      }else{
+        Alert.alert('fill all the values!',);
+      }
   };
+
+  
 
   useEffect(() => {
     if (goalArea === "Select") {
@@ -283,6 +308,7 @@ const Goalsum = () => {
 
   return (
     <ScrollView className="p-2 mb-10" style={{ backgroundColor: "white" }}>
+            {/* <ActivityIndicator size={50} color={'#019FFE'} className='absolute top-1/2 bg-black opacity-20 p-20 w-full mr-20 rounded-lg ' /> */}
       <SafeAreaView className="flex flex-col justify-between gap-5 mb-5">
         <View>
           <Text className="text-[15px] font-popMedium m-1">Goal Title</Text>
@@ -376,7 +402,7 @@ const Goalsum = () => {
             ) : goalArea === "Enter" ? (
               <View>
                 <Text className="text-[15px] font-popMedium m-1">
-                  Enter your area of goal``
+                  Enter your area of goal
                 </Text>
                 <TextInput
                   onChangeText={handleOnEnterGoalArea}

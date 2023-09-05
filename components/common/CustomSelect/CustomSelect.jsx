@@ -50,6 +50,7 @@ const styles = StyleSheet.create({
   },
   placeholderStyle: {
     fontSize: 16,
+    fontFamily: FONT.medium
   },
   selectedTextStyle: {
     fontSize: 14,

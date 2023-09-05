@@ -87,6 +87,9 @@ const reducer = (state = initialState, action) => {
 
     case reduxAction.UPDATE_FAMILYDATA:
       return { ...state, ShareGoalData: action.payload};
+    
+    case reduxAction.ADD_GOALSUM_COLLECTION:
+      return { ...state, goalSummaryDataCollection: action.payload};
 
     default:
       return { ...state };

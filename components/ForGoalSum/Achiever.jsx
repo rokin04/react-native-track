@@ -93,14 +93,14 @@ const Achiever = () => {
 
   useEffect(() => {
     const filteredObj = achieverGoalAreaData?.achiever?.filter(
-      (data) => data.type === achieverSelect || goalSummaryData.goalSelectedSubType
+      (data) => data.type === achieverSelect 
     );
     filteredObj && setSubTypeData(filteredObj[0]?.subTypes);
-  }, [achieverSelect || goalSummaryData.goalSelectedSubType]);
+  }, [achieverSelect ]);
 
   return (
     <SafeAreaView>
-      {(achieverSelect || goalSummaryData.goalSelectedSubType) && (
+      {(achieverSelect) && (
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}

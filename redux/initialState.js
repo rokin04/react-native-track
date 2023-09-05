@@ -2,20 +2,10 @@ export const initialState = {
   settingGroupGoal: [{ groupName: null, name: null, email: null }],
 
   settingmilestonedata: {
-    breakdown: 1,
+    breakdown: 0,
     expectedOutcome: "",
     goalId: 2183,
-    milestone: [
-      {
-        action: 1,
-        name: null,
-        description: null,
-        startDate: null,
-        targetDate: null,
-        celebrations: null,
-        progress: 0,
-      },
-    ],
+    milestone: [],
   },
 
   ShareGoalData: {
@@ -117,6 +107,9 @@ export const initialState = {
     goalDescription: "",
     goalSelectedSubOption: "",
   },
+
+  goalSummaryDataCollection:[],
+
   goalDialogueOptionsForInfluencer: [],
   roleName: "",
   userCurrentPage: "",
