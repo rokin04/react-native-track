@@ -244,31 +244,45 @@ const Goalsum = ({navigation}) => {
       redirect: "follow",
     };
 
-    fetch(
-      `http://dev.trackability.net.au:8082/goals/summary/save/${2165}`,
-      requestOptions
-    )
-      .then((res) =>
-        res.json().then((data) => {
-          if (data.responseStatus === 200) {
+    // console.log(JSON.parse(requestOptions.body));
 
-            const goalData = JSON.parse(requestOptions.body)
+    const checkValues = Object.keys(JSON.parse(requestOptions.body)).every((key, value)=> {
+      if (goalSelectedSubOption !== "" && key === 'area_custom') {
+        return true;
+      }
+      return JSON.parse(requestOptions.body)[key] !== "";
+    })
 
-            showToast();
-              dispatch({
-                type:reduxAction.CHANGE_GOAL_PAGE,
-                payload: 1
-              })
-              dispatch({
-                type:reduxAction.ADD_GOALSUM_COLLECTION,
-                payload: [ ...goalSummaryDataCollection , goalData ]
-              })
-          } else if (data.responseStatus === 400) {
-            console.log("response status 400");
-          }
-        })
-      )
-      .catch(console.log("hay"));
+      if(checkValues){
+        fetch(
+          `http://dev.trackability.net.au:8082/goals/summary/save/${2165}`,
+          requestOptions
+        )
+          .then((res) =>
+            res.json().then((data) => {
+              if (data.responseStatus === 200) {
+    
+                const goalData = JSON.parse(requestOptions.body)
+    
+                showToast();
+                  dispatch({
+                    type:reduxAction.CHANGE_GOAL_PAGE,
+                    payload: 1
+                  })
+                  dispatch({
+                    type:reduxAction.ADD_GOALSUM_COLLECTION,
+                    payload: [ ...goalSummaryDataCollection , goalData ]
+                  })
+              } else if (data.responseStatus === 400) {
+                console.log(data.responseMessage );
+                Alert.alert(data.responseMessage );
+              }
+            })
+          )
+          .catch(console.log("hay"));
+      }else{
+        Alert.alert('fill all the values!',);
+      }
   };
 
   
@@ -291,9 +305,6 @@ const Goalsum = ({navigation}) => {
       });
     }
   }, [goalArea]);
-
-  console.log(goalSummaryDataCollection);
-
 
   return (
     <ScrollView className="p-2 mb-10" style={{ backgroundColor: "white" }}>

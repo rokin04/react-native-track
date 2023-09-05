@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { Text, View, SafeAreaView, TextInput } from "react-native";
+import React, { useState } from "react";
+import { Text, View, SafeAreaView, TextInput, Alert } from "react-native";
 import { RadioButton } from "react-native-paper";
 import { Ionicons } from "@expo/vector-icons";
 import { TouchableOpacity } from "react-native";
@@ -11,6 +11,8 @@ import { Modal, ScrollView, StyleSheet } from "react-native";
 import CustomSelect from "../../components/common/CustomSelect/CustomSelect";
 import { Button } from "react-native";
 import { Toast } from "react-native-toast-message/lib/src/Toast";
+import { Formik } from "formik";
+import * as Yup from "yup";
 
 const ShareGoal = ({ navigation }) => {
   const [peoplechange, setPeoplechange] = useState("people");
@@ -69,11 +71,11 @@ const ShareGoal = ({ navigation }) => {
     reasontoshare2,
   } = shareReviewerData;
 
-  const handlePeopleFirstName = (e) => {
-    setPeopleFName(e);
+  const handlePeopleFirstName = (value) => {
+    setPeopleFName(value);
     dispatch({
       type: reduxAction.UPDATE_PEOPLE_DATA,
-      payload: { ...shareFamilyData, peoplefirstname: e },
+      payload: { ...shareFamilyData, peoplefirstname: value },
     });
   };
 
@@ -109,7 +111,7 @@ const ShareGoal = ({ navigation }) => {
     });
   };
 
-  const handlepeoplerole = (itemValue) => {
+  const handlepeoplerole = (itemValue, handleChange) => {
     setRole(itemValue.value);
     dispatch({
       type: reduxAction.UPDATE_PEOPLE_DATA,
@@ -165,7 +167,7 @@ const ShareGoal = ({ navigation }) => {
     });
   };
 
-  const addfamilydata = () => {
+  const handleFamilySubmit = (values, { resetForm }) => {
     setModalVisible1(false);
 
     const shareFamilyData = {
@@ -186,17 +188,11 @@ const ShareGoal = ({ navigation }) => {
       payload: [...familyData, shareFamilyData],
     });
 
-    setPeopleFName("");
-    setPeopleLName("");
-    setPeopleEmail("");
-    setPeoplePhNo("");
-    setPeopleReason("");
-    setRole("");
-    setPermissions("");
+    resetForm(INITIAL_FORM_STATE);
     setEditFamilyData(0);
   };
 
-  const addreviewerdata = () => {
+  const addreviewerdata = (values, { resetForm }) => {
     setModalVisible2(false);
 
     const shareReviewerData = {
@@ -213,6 +209,9 @@ const ShareGoal = ({ navigation }) => {
       type: reduxAction.ADD_GROUP_REVIEWER_DATA,
       payload: [...reviewerData, shareReviewerData],
     });
+
+    resetForm(REVIEWER_INITIAL_FORM_STATE);
+
     setReviewerFName("");
     setReviewerLName("");
     setReviewerEmail("");
@@ -426,52 +425,7 @@ const ShareGoal = ({ navigation }) => {
     }
   };
 
-  // const handleOnSave = () => {
-  //   dispatch({
-  //     type:reduxAction.UPDATE_FAMILYDATA,
-  //     payload: { ...ShareGoalData , family : { familyColleagueList: familyData  } , reviewer: { parametersToReview: parameterdata , reviewerList: reviewerData } }
-  //   })
-  // }
-
-  const showToast = () => {
-    Toast.show({
-      type: "success",
-      text1: "ShareGoal saved successfully!",
-    });
-  };
-
-  const handleOnSave = async () => {
-
-    var myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/json");
-    var requestOptions = {
-      method: "POST",
-      headers: myHeaders,
-      body: JSON.stringify(ShareGoalData),
-      redirect: "follow",
-    };
-
-    await fetch(
-      `http://dev.trackability.net.au:8082/api/sharegoals/save`,
-      requestOptions
-    )
-      .then((res) =>
-        res.json().then((result) => {
-          if (result.responseStatus === 200) {
-            showToast();
-            navigation.navigate('Dashboard');
-
-          }
-          if (result.responseStatus === 400) {
-            console.log(result.responseMessage);
-          }
-        })
-      )
-      .catch((err) => console.log(err));
-  };
-
-  useEffect(()=>{
-
+  const handleOnDataSave = () => {
     dispatch({
       type: reduxAction.UPDATE_FAMILYDATA,
       payload: {
@@ -483,8 +437,119 @@ const ShareGoal = ({ navigation }) => {
         },
       },
     });
+  };
 
-  },[reviewerData])
+  const showToast = () => {
+    Toast.show({
+      type: "success",
+      text1: "ShareGoal saved successfully!",
+    });
+  };
+
+  const handleOnSave = async () => {
+
+    handleOnDataSave();
+
+    const {reviewer: { parametersToReview, reviewerList }} = ShareGoalData;
+
+    console.log(reviewerList?.length);
+
+    if (reviewerList?.length > 0 && parametersToReview?.length > 0) {
+        var myHeaders = new Headers();
+        myHeaders.append("Content-Type", "application/json");
+        var requestOptions = {
+          method: "POST",
+          headers: myHeaders,
+          body: JSON.stringify(ShareGoalData),
+          redirect: "follow",
+        };
+
+        await fetch(
+          `http://dev.trackability.net.au:8082/api/sharegoals/save`,
+          requestOptions
+        )
+          .then((res) =>
+            res.json().then((result) => {
+              if (result.responseStatus === 200) {
+                showToast();
+                navigation.navigate("Dashboard");
+              }
+              if (result.responseStatus === 400) {
+                console.log(result.responseMessage);
+              }
+            })
+          )
+          .catch((err) => console.log(err));
+    } else {
+      Alert.alert("Need One Reviewer and fill Parameters to Review");
+    }
+  };
+
+  const INITIAL_FORM_STATE = {
+    peopleFName: "",
+    peopleLName: "",
+    peopleEmail: "",
+    peopleRole: "",
+    peoplePhNo: "",
+    peopleReason: "",
+    peoplePermission: "",
+  };
+  const PEOPLE_SCHEMA = Yup.object().shape({
+    peopleFName: Yup.string()
+      // .min(7, 'Too Short!')
+      // .max(50, 'Too Long!')
+      .matches(/^[a-zA-Z\s]+$/, "Invalid Name")
+      .required("Required"),
+    peopleLName: Yup.string()
+      // .min(7, 'Too Short!')
+      // .max(50, 'Too Long!')
+      .matches(/^[a-zA-Z\s]+$/, "Invalid Name")
+      .required("Required"),
+    peopleEmail: Yup.string().email("Invalid email").required("Required"),
+    peoplePhNo: Yup.string()
+      .required("Required")
+      .matches(/^[0-9]+$/, "Invalid Phone Number")
+      .min(10, "Invalid Phone Number")
+      .max(10, "Invalid Phone Number"),
+    peopleReason: Yup.string().required("Required"),
+    peopleRole: Yup.mixed().required("Required"),
+    peoplePermission: Yup.mixed().required("Required"),
+  });
+
+  const REVIEWER_INITIAL_FORM_STATE = {
+    reviewerFName: "",
+    reviewerLName: "",
+    reviewerEmail: "",
+    reviewerRole: "",
+    reviewerPhNo: "",
+    reviewerReason: "",
+    reviewerPermission: "",
+  };
+
+  const ReviewerSchema = Yup.object().shape({
+    reviewerFName: Yup.string()
+      // .min(7, 'Too Short!')
+      // .max(50, 'Too Long!')
+      .matches(/^[a-zA-Z\s]+$/, "Invalid Name")
+      .required("Required"),
+    reviewerLName: Yup.string()
+      // .min(7, 'Too Short!')
+      // .max(50, 'Too Long!')
+      .matches(/^[a-zA-Z\s]+$/, "Invalid Name")
+      .required("Required"),
+    reviewerEmail: Yup.string().email("Invalid email").required("Required"),
+    reviewerPhNo: Yup.string()
+      .required("Required")
+      .matches(/^[0-9]+$/, "Invalid Phone Number")
+      .min(10, "Invalid Phone Number")
+      .max(10, "Invalid Phone Number"),
+    reviewerReason: Yup.string()
+      // .min(7, 'Too Short!')
+      // .max(50, 'Too Long!')
+      .required("Required"),
+  });
+
+  // console.log(familyData);
 
   return (
     <ScrollView className="p-2 bg-white">
@@ -534,7 +599,7 @@ const ShareGoal = ({ navigation }) => {
           </View>
           <View className="flex flex-row-reverse">
             {peoplechange === "people"
-              ? !(familyData.length > 3) && (
+              ? !(familyData.length >= 3) && (
                   <TouchableOpacity
                     className="flex flex-row ml-8"
                     onPress={() => setModalVisible1(true)}
@@ -578,7 +643,7 @@ const ShareGoal = ({ navigation }) => {
 
           {familyData.map((data, index) => {
             return (
-              <View>
+              <View className="my-1">
                 {peoplechange === "people"
                   ? data.firstName !== null &&
                     data.firstName !== "" && (
@@ -848,312 +913,464 @@ const ShareGoal = ({ navigation }) => {
 
           <View style={styles.container}>
             <Portal>
-              <Modal
-                animationType="slide"
-                transparent={true}
-                visible={modalVisible1}
-                onRequestClose={() => setModalVisible1(false)}
+              <Formik
+                initialValues={INITIAL_FORM_STATE}
+                validationSchema={PEOPLE_SCHEMA}
+                onSubmit={(values, resetForm) =>
+                  handleFamilySubmit(values, resetForm)
+                }
               >
-                <View style={styles.modalContainer}>
-                  <View style={styles.modalContent}>
-                    <ScrollView>
-                      <View className="flex flex-row justify-between">
-                        <Text
-                          className="text-md font-popMedium"
-                          style={{
-                            color: "#263238",
-                            fontSize: 18,
-                            alignItems: "center",
-                            marginBottom: 10,
-                          }}
-                        >
-                          Add People
-                        </Text>
-                        <Ionicons
-                          size={30}
-                          name="close-outline"
-                          style={{ color: "#444444" }}
-                          onPress={handleOnCloseTab}
-                        />
-                      </View>
-                      <View>
-                        <Text
-                          className="text-sm font-popMedium"
-                          style={{ color: "#263238", fontSize: 15 }}
-                        >
-                          First Name
-                        </Text>
-                        <TextInput
-                          className="border p-3 text-lg rounded mb-2"
-                          style={{ borderColor: "#D0D2D2" }}
-                          placeholderTextColor={"#54585A"}
-                          value={peopleFName}
-                          onChangeText={handlePeopleFirstName}
-                          placeholder="Enter First Name"
-                          required
-                        />
-                        <Text
-                          className="text-sm font-popMedium"
-                          style={{ color: "#263238", fontSize: 15 }}
-                        >
-                          Last Name
-                        </Text>
-                        <TextInput
-                          className="border p-3 text-lg rounded mb-2"
-                          style={{ borderColor: "#D0D2D2" }}
-                          placeholderTextColor={"#54585A"}
-                          value={peopleLName}
-                          onChangeText={handlePeopleLastName}
-                          placeholder="Enter Last Name"
-                          required
-                        />
-                        <Text
-                          className="text-sm font-popMedium"
-                          style={{ color: "#263238", fontSize: 15 }}
-                        >
-                          Email
-                        </Text>
-                        <TextInput
-                          className="border p-3 text-lg rounded mb-2"
-                          style={{ borderColor: "#D0D2D2" }}
-                          placeholderTextColor={"#54585A"}
-                          value={peopleEmail}
-                          onChangeText={handlePeopleEmail}
-                          placeholder="Enter Email"
-                          required
-                        />
-                        <Text
-                          className="text-sm font-popMedium"
-                          style={{ color: "#263238", fontSize: 15 }}
-                        >
-                          Phone Number
-                        </Text>
-                        <TextInput
-                          className="border p-3 text-lg rounded mb-2"
-                          style={{ borderColor: "#D0D2D2" }}
-                          placeholderTextColor={"#54585A"}
-                          value={peoplePhNo}
-                          onChangeText={handlePeoplePhNo}
-                          placeholder="Enter Phone Number"
-                          required
-                        />
-                        <View>
-                          <Text
-                            className="text-sm font-popMedium mr-12"
-                            style={{ color: "#263238", fontSize: 15 }}
-                          >
-                            Role
-                          </Text>
-                        </View>
-                        <View
-                          className="text-2xl font-popMedium mb-2"
-                          style={{
-                            borderColor: "#54585A",
-                            borderWidth: 0.5,
-                            borderRadius: 4,
-                          }}
-                        >
-                          <CustomSelect
-                            onChange={handlepeoplerole}
-                            data={[
-                              { label: "Nominated", value: "nominated" },
-                              { label: "Primary", value: "primary" },
-                              { label: "Secondary", value: "secondary" },
-                              { label: "Others", value: "others" },
-                            ]}
-                          />
-                        </View>
-                        <Text
-                          className="text-sm font-popMedium"
-                          style={{ color: "#263238", fontSize: 15 }}
-                        >
-                          Reason to share
-                        </Text>
-                        <TextInput
-                          className="border p-3 text-lg rounded mb-2"
-                          style={{ borderColor: "#D0D2D2" }}
-                          placeholderTextColor={"#54585A"}
-                          value={peopleReason}
-                          onChangeText={handleReasonToShare1}
-                          placeholder="Write Reason"
-                        />
-                        <View className>
-                          <Text
-                            className="text-sm font-popMedium mr-12"
-                            style={{ color: "#263238", fontSize: 15 }}
-                          >
-                            Permissions
-                          </Text>
-                        </View>
-                        <View
-                          className="border rounded text-2xl font-popMedium "
-                          style={{ borderColor: "#D0D2D2" }}
-                        >
-                          {/* <Picker
-                            style={{ color: "#54585A" }}
-                            selectedValue={permissions}
-                            onValueChange={(itemValue) =>
-                              handlepermission(itemValue)
-                            }
-                          >
-                            <Picker.Item label="Select" value="reactJs" />
-                            <Picker.Item label="Daily" value="daily" />
-                            <Picker.Item label="Weekly" value="weekly" />
-                            <Picker.Item label="Monthly" value="monthly" />
-                            <Picker.Item label="Yearly" value="yearly" />
-                          </Picker> */}
-                          <CustomSelect
-                            onChange={handlepermission}
-                            data={[
-                              { label: "Daily", value: "daily" },
-                              { label: "Weekly", value: "weekly" },
-                              { label: "Monthly", value: "month" },
-                              { label: "Yearly", value: "yearly" },
-                            ]}
-                          />
-                        </View>
-                        <View>
-                          <TouchableOpacity
-                            onPress={
-                              editclick ? updateFamilyData : addfamilydata
-                            }
-                            className="w-full p-2 mt-3 bg-blue-400 ml-auto rounded-sm"
-                          >
-                            <Text className="text-lg text-center font-popMedium text-white font-semibold">
-                              {editclick
-                                ? "Update FamilyData"
-                                : "Add FamilyData"}
+                {({
+                  values,
+                  errors,
+                  touched,
+                  setFieldTouched,
+                  handleSubmit,
+                  handleChange,
+                  resetForm,
+                }) => (
+                  <Modal
+                    animationType="slide"
+                    transparent={true}
+                    visible={modalVisible1}
+                    onRequestClose={() => setModalVisible1(false)}
+                  >
+                    <View style={styles.modalContainer}>
+                      <View style={styles.modalContent}>
+                        <ScrollView showsVerticalScrollIndicator={false}>
+                          <View className="flex flex-row justify-between">
+                            <Text
+                              className="text-md font-popMedium"
+                              style={{
+                                color: "#263238",
+                                fontSize: 18,
+                                alignItems: "center",
+                                marginBottom: 10,
+                              }}
+                            >
+                              Add People
                             </Text>
-                          </TouchableOpacity>
-                        </View>
+                            <Ionicons
+                              size={30}
+                              name="close-outline"
+                              style={{ color: "#444444" }}
+                              onPress={handleOnCloseTab}
+                            />
+                          </View>
+                          <View>
+                            <View className="flex-row justify-between">
+                              <Text
+                                className="text-sm font-popMedium"
+                                style={{ color: "#263238", fontSize: 15 }}
+                              >
+                                First Name
+                              </Text>
+                            </View>
+                            <TextInput
+                              className="border p-3 text-lg rounded mb-2 font-popMedium placeholder:font-popMedium"
+                              style={{ borderColor: "#D0D2D2" }}
+                              placeholderTextColor={"#54585A"}
+                              value={values.peopleFName}
+                              onChangeText={(value) => {
+                                handlePeopleFirstName(value);
+                                handleChange("peopleFName")(value);
+                              }}
+                              placeholder="Enter First Name"
+                              onBlur={() => setFieldTouched("peopleFName")}
+                            />
+                            {touched.peopleFName && errors.peopleFName && (
+                              <Text className="text-red-500 font-popMedium text-right text-xs">
+                                {errors.peopleFName}
+                              </Text>
+                            )}
+                            <View className="flex-row justify-between">
+                              <Text
+                                className="text-sm font-popMedium"
+                                style={{ color: "#263238", fontSize: 15 }}
+                              >
+                                Last Name
+                              </Text>
+                            </View>
+                            <TextInput
+                              className="border p-3 text-lg rounded mb-2 font-popMedium placeholder:font-popMedium"
+                              style={{ borderColor: "#D0D2D2" }}
+                              placeholderTextColor={"#54585A"}
+                              value={values.peopleLName}
+                              onChangeText={(value) => {
+                                handlePeopleLastName(value);
+                                handleChange("peopleLName")(value);
+                              }}
+                              placeholder="Enter Last Name"
+                              onBlur={() => setFieldTouched("peopleLName")}
+                            />
+                            {touched.peopleLName && errors.peopleLName && (
+                              <Text className="text-red-500 font-popMedium text-right text-xs">
+                                {errors.peopleLName}
+                              </Text>
+                            )}
+                            <View className="flex-row justify-between">
+                              <Text
+                                className="text-sm font-popMedium"
+                                style={{ color: "#263238", fontSize: 15 }}
+                              >
+                                Email
+                              </Text>
+                            </View>
+                            <TextInput
+                              className="border p-3 text-lg rounded mb-2 font-popMedium placeholder:font-popMedium"
+                              style={{ borderColor: "#D0D2D2" }}
+                              placeholderTextColor={"#54585A"}
+                              value={values.peopleEmail}
+                              onChangeText={(value) => {
+                                handlePeopleEmail(value);
+                                handleChange("peopleEmail")(value);
+                              }}
+                              placeholder="Enter Email"
+                              onBlur={() => setFieldTouched("peopleEmail")}
+                            />
+                            {touched.peopleEmail && errors.peopleEmail && (
+                              <Text className="text-red-500 font-popMedium text-right text-xs">
+                                {errors.peopleEmail}
+                              </Text>
+                            )}
+                            <View className="flex-row justify-between">
+                              <Text
+                                className="text-sm font-popMedium"
+                                style={{ color: "#263238", fontSize: 15 }}
+                              >
+                                Phone Number
+                              </Text>
+                            </View>
+                            <TextInput
+                              className="border p-3 text-lg rounded mb-2 font-popMedium placeholder:font-popMedium"
+                              style={{ borderColor: "#D0D2D2" }}
+                              placeholderTextColor={"#54585A"}
+                              keyboardType="numeric"
+                              value={values.peoplePhNo}
+                              onChangeText={(value) => {
+                                handlePeoplePhNo(value);
+                                handleChange("peoplePhNo")(value);
+                              }}
+                              placeholder="Enter Phone Number"
+                              onBlur={() => setFieldTouched("peoplePhNo")}
+                            />
+                            {touched.peoplePhNo && errors.peoplePhNo && (
+                              <Text className="text-red-500 font-popMedium text-right text-xs">
+                                {errors.peoplePhNo}
+                              </Text>
+                            )}
+                            <View>
+                              <Text
+                                className="text-sm font-popMedium"
+                                style={{ color: "#263238", fontSize: 15 }}
+                              >
+                                Role
+                              </Text>
+                            </View>
+                            <View
+                              className="text-2xl font-popMedium mb-2"
+                              style={{
+                                borderColor: "#54585A",
+                                borderWidth: 0.5,
+                                borderRadius: 4,
+                              }}
+                            >
+                              <CustomSelect
+                                onChange={(selectedObj) => {
+                                  handlepeoplerole(selectedObj);
+                                  handleChange("peopleRole")(selectedObj.value);
+                                }}
+                                data={[
+                                  { label: "Nominated", value: "nominated" },
+                                  { label: "Primary", value: "primary" },
+                                  { label: "Secondary", value: "secondary" },
+                                  { label: "Others", value: "others" },
+                                ]}
+                              />
+                            </View>
+                            {touched.peopleRole && errors.peopleRole && (
+                              <Text className="text-red-500 font-popMedium text-right text-xs">
+                                {errors.peopleRole}
+                              </Text>
+                            )}
+                            <View className="flex-row justify-between">
+                              <Text
+                                className="text-sm font-popMedium"
+                                style={{ color: "#263238", fontSize: 15 }}
+                              >
+                                Reason to share
+                              </Text>
+                            </View>
+                            <TextInput
+                              className="border p-3 text-lg rounded mb-2 font-popMedium placeholder:font-popMedium"
+                              style={{ borderColor: "#D0D2D2" }}
+                              placeholderTextColor={"#54585A"}
+                              value={values.peopleReason}
+                              onChangeText={(value) => {
+                                handleReasonToShare1(value);
+                                handleChange("peopleReason")(value);
+                              }}
+                              placeholder="Write Reason"
+                              onBlur={() => setFieldTouched("peopleReason")}
+                            />
+                            {touched.peopleReason && errors.peopleReason && (
+                              <Text className="text-red-500 font-popMedium text-right text-xs">
+                                {errors.peopleReason}
+                              </Text>
+                            )}
+                            <View className>
+                              <Text
+                                className="text-sm font-popMedium mr-12"
+                                style={{ color: "#263238", fontSize: 15 }}
+                              >
+                                Permissions
+                              </Text>
+                            </View>
+                            <View
+                              className="border rounded text-2xl font-popMedium "
+                              style={{ borderColor: "#D0D2D2" }}
+                            >
+                              <CustomSelect
+                                onChange={(selectedObj) => {
+                                  handlepermission(selectedObj);
+                                  handleChange("peoplePermission")(
+                                    selectedObj.value
+                                  );
+                                }}
+                                data={[
+                                  { label: "Daily", value: "daily" },
+                                  { label: "Weekly", value: "weekly" },
+                                  { label: "Monthly", value: "month" },
+                                  { label: "Yearly", value: "yearly" },
+                                ]}
+                              />
+                            </View>
+                            {touched.peoplePermission &&
+                              errors.peoplePermission && (
+                                <Text className="text-red-500 font-popMedium text-right text-xs">
+                                  {errors.peoplePermission}
+                                </Text>
+                              )}
+                            <View>
+                              <TouchableOpacity
+                                onPress={
+                                  editclick ? updateFamilyData : handleSubmit
+                                }
+                                className="w-full p-2 mt-3 bg-blue-400 ml-auto rounded-sm"
+                              >
+                                <Text className="text-lg text-center font-popMedium text-white font-semibold">
+                                  {editclick
+                                    ? "Update FamilyData"
+                                    : "Add FamilyData"}
+                                </Text>
+                              </TouchableOpacity>
+                            </View>
+                          </View>
+                        </ScrollView>
                       </View>
-                    </ScrollView>
-                  </View>
-                </View>
-              </Modal>
+                    </View>
+                  </Modal>
+                )}
+              </Formik>
             </Portal>
           </View>
 
           <View style={styles.container}>
             <Portal>
-              <Modal
-                animationType="slide"
-                transparent={true}
-                visible={modalVisible2}
-                onRequestClose={() => setModalVisible2(false)}
+              <Formik
+                initialValues={REVIEWER_INITIAL_FORM_STATE}
+                validationSchema={ReviewerSchema}
+                onSubmit={(values, resetForm) =>
+                  addreviewerdata(values, resetForm)
+                }
               >
-                <View style={styles.modalContainer}>
-                  <View style={styles.modalContent}>
-                    <ScrollView>
-                      <View className="flex flex-row justify-between">
-                        <Text
-                          className="text-md font-popMedium"
-                          style={{
-                            color: "#263238",
-                            fontSize: 18,
-                            alignItems: "center",
-                            marginBottom: 10,
-                          }}
-                        >
-                          Add Reviewer
-                        </Text>
-                        <Ionicons
-                          size={30}
-                          name="close-outline"
-                          style={{ color: "#444444" }}
-                          onPress={handleCloseTab2}
-                        />
-                      </View>
-                      <View>
-                        <Text
-                          className="text-sm font-popMedium"
-                          style={{ color: "#263238", fontSize: 15 }}
-                        >
-                          First Name
-                        </Text>
-                        <TextInput
-                          className="border p-3 text-lg rounded mb-2"
-                          style={{ borderColor: "#D0D2D2" }}
-                          placeholderTextColor={"#54585A"}
-                          value={reviewerFName}
-                          onChangeText={handleReviewerFirstName}
-                          placeholder="Enter First Name"
-                        />
-                        <Text
-                          className="text-sm font-popMedium"
-                          style={{ color: "#263238", fontSize: 15 }}
-                        >
-                          Last Name
-                        </Text>
-                        <TextInput
-                          className="border p-3 text-lg rounded mb-2"
-                          style={{ borderColor: "#D0D2D2" }}
-                          placeholderTextColor={"#54585A"}
-                          value={reviewerLName}
-                          onChangeText={handleReviewerLastName}
-                          placeholder="Enter Last Name"
-                        />
-                        <Text
-                          className="text-sm font-popMedium"
-                          style={{ color: "#263238", fontSize: 15 }}
-                        >
-                          Email
-                        </Text>
-                        <TextInput
-                          className="border p-3 text-lg rounded mb-2"
-                          style={{ borderColor: "#D0D2D2" }}
-                          placeholderTextColor={"#54585A"}
-                          value={reviewerEmail}
-                          onChangeText={handleReviewerEmail}
-                          placeholder="Enter Email"
-                        />
-                        <Text
-                          className="text-sm font-popMedium"
-                          style={{ color: "#263238", fontSize: 15 }}
-                        >
-                          Phone Number
-                        </Text>
-                        <TextInput
-                          className="border p-3 text-lg rounded mb-2"
-                          style={{ borderColor: "#D0D2D2" }}
-                          placeholderTextColor={"#54585A"}
-                          value={reviewerPhNo}
-                          onChangeText={handleReviewerPhNo}
-                          placeholder="Enter Phone Number"
-                        />
-                        <Text
-                          className="text-sm font-popMedium"
-                          style={{ color: "#263238", fontSize: 15 }}
-                        >
-                          Reason to share
-                        </Text>
-                        <TextInput
-                          className="border p-3 text-lg rounded mb-2"
-                          style={{ borderColor: "#D0D2D2" }}
-                          placeholderTextColor={"#54585A"}
-                          value={reviewerReason}
-                          onChangeText={handleReasonToShare2}
-                          placeholder="Write Reason"
-                        />
-                        <View>
-                          <TouchableOpacity
-                            onPress={
-                              editclick2 ? updateReviwerData : addreviewerdata
-                            }
-                            className="w-full p-2 mt-3 bg-blue-400 ml-auto rounded-sm"
-                          >
-                            <Text className="text-lg text-center font-popMedium text-white font-semibold">
-                              {editclick2
-                                ? "Update ReviwerData"
-                                : "Add ReviewerData"}
+                {({
+                  values,
+                  errors,
+                  touched,
+                  handleChange,
+                  setFieldTouched,
+                  isValid,
+                  handleSubmit,
+                  resetForm,
+                }) => (
+                  <Modal
+                    animationType="slide"
+                    transparent={true}
+                    visible={modalVisible2}
+                    onRequestClose={() => setModalVisible2(false)}
+                  >
+                    <View style={styles.modalContainer}>
+                      <View style={styles.modalContent}>
+                        <ScrollView>
+                          <View className="flex flex-row justify-between">
+                            <Text
+                              className="text-md font-popMedium"
+                              style={{
+                                color: "#263238",
+                                fontSize: 18,
+                                alignItems: "center",
+                                marginBottom: 10,
+                              }}
+                            >
+                              Add Reviewer
                             </Text>
-                          </TouchableOpacity>
-                        </View>
+                            <Ionicons
+                              size={30}
+                              name="close-outline"
+                              style={{ color: "#444444" }}
+                              onPress={handleCloseTab2}
+                            />
+                          </View>
+                          <View>
+                            <View className="flex-row justify-between">
+                              <Text
+                                className="text-sm font-popMedium"
+                                style={{ color: "#263238", fontSize: 15 }}
+                              >
+                                First Name
+                              </Text>
+                            </View>
+                            <TextInput
+                              className="border p-3 text-lg rounded mb-2 font-popMedium placeholder:font-popMedium"
+                              style={{ borderColor: "#D0D2D2" }}
+                              placeholderTextColor={"#54585A"}
+                              value={values.reviewerFName}
+                              onChangeText={(value) => {
+                                handleReviewerFirstName(value);
+                                handleChange("reviewerFName")(value);
+                              }}
+                              placeholder="Enter First Name"
+                              onBlur={() => setFieldTouched("reviewerFName")}
+                            />
+                            {touched.reviewerFName && errors.reviewerFName && (
+                              <Text className="text-red-500 font-popMedium text-right text-xs">
+                                {errors.reviewerFName}
+                              </Text>
+                            )}
+                            <View className="flex-row justify-between">
+                              <Text
+                                className="text-sm font-popMedium"
+                                style={{ color: "#263238", fontSize: 15 }}
+                              >
+                                Last Name
+                              </Text>
+                            </View>
+                            <TextInput
+                              className="border p-3 text-lg rounded mb-2 font-popMedium placeholder:font-popMedium"
+                              style={{ borderColor: "#D0D2D2" }}
+                              placeholderTextColor={"#54585A"}
+                              value={values.reviewerLName}
+                              onChangeText={(value) => {
+                                handleReviewerLastName(value);
+                                handleChange("reviewerLName")(value);
+                              }}
+                              placeholder="Enter Last Name"
+                              onBlur={() => setFieldTouched("reviewerLName")}
+                            />
+                            {touched.reviewerLName && errors.reviewerLName && (
+                              <Text className="text-red-500 font-popMedium text-right text-xs">
+                                {errors.reviewerLName}
+                              </Text>
+                            )}
+                            <View className="flex-row justify-between">
+                              <Text
+                                className="text-sm font-popMedium"
+                                style={{ color: "#263238", fontSize: 15 }}
+                              >
+                                Email
+                              </Text>
+                            </View>
+                            <TextInput
+                              className="border p-3 text-lg rounded mb-2 font-popMedium placeholder:font-popMedium"
+                              style={{ borderColor: "#D0D2D2" }}
+                              placeholderTextColor={"#54585A"}
+                              value={values.reviewerEmail}
+                              onChangeText={(value) => {
+                                handleReviewerEmail(value);
+                                handleChange("reviewerEmail")(value);
+                              }}
+                              placeholder="Enter Email"
+                              onBlur={() => setFieldTouched("reviewerEmail")}
+                            />
+                            {touched.reviewerEmail && errors.reviewerEmail && (
+                              <Text className="text-red-500 font-popMedium text-right text-xs">
+                                {errors.reviewerEmail}
+                              </Text>
+                            )}
+                            <View className="flex-row justify-between">
+                              <Text
+                                className="text-sm font-popMedium"
+                                style={{ color: "#263238", fontSize: 15 }}
+                              >
+                                Phone Number
+                              </Text>
+                            </View>
+                            <TextInput
+                              className="border p-3 text-lg rounded mb-2 font-popMedium placeholder:font-popMedium"
+                              style={{ borderColor: "#D0D2D2" }}
+                              placeholderTextColor={"#54585A"}
+                              keyboardType="numeric"
+                              value={values.reviewerPhNo}
+                              onChangeText={(value) => {
+                                handleReviewerPhNo(value);
+                                handleChange("reviewerPhNo")(value);
+                              }}
+                              placeholder="Enter Phone Number"
+                              onBlur={() => setFieldTouched("reviewerPhNo")}
+                            />
+                            {touched.reviewerPhNo && errors.reviewerPhNo && (
+                              <Text className="text-red-500 font-popMedium text-right text-xs">
+                                {errors.reviewerPhNo}
+                              </Text>
+                            )}
+                            <View className="flex-row justify-between">
+                              <Text
+                                className="text-sm font-popMedium"
+                                style={{ color: "#263238", fontSize: 15 }}
+                              >
+                                Reason to share
+                              </Text>
+                            </View>
+                            <TextInput
+                              className="border p-3 text-lg rounded mb-2 font-popMedium placeholder:font-popMedium"
+                              style={{ borderColor: "#D0D2D2" }}
+                              placeholderTextColor={"#54585A"}
+                              value={values.reviewerReason}
+                              onChangeText={(value) => {
+                                handleReasonToShare2(value);
+                                handleChange("reviewerReason")(value);
+                              }}
+                              placeholder="Write Reason"
+                              onBlur={() => setFieldTouched("reviewerReason")}
+                            />
+                            {touched.reviewerReason &&
+                              errors.reviewerReason && (
+                                <Text className="text-red-500 font-popMedium text-right text-xs">
+                                  {errors.reviewerReason}
+                                </Text>
+                              )}
+                            <View>
+                              <TouchableOpacity
+                                onPress={
+                                  editclick2 ? updateReviwerData : handleSubmit
+                                }
+                                className="w-full p-2 mt-3 bg-blue-400 ml-auto rounded-sm"
+                              >
+                                <Text className="text-lg text-center font-popMedium text-white font-semibold">
+                                  {editclick2
+                                    ? "Update ReviwerData"
+                                    : "Add ReviewerData"}
+                                </Text>
+                              </TouchableOpacity>
+                            </View>
+                          </View>
+                        </ScrollView>
                       </View>
-                    </ScrollView>
-                  </View>
-                </View>
-              </Modal>
+                    </View>
+                  </Modal>
+                )}
+              </Formik>
             </Portal>
           </View>
           <View style={styles.container}>

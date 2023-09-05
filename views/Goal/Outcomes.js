@@ -1,5 +1,5 @@
 import React from "react";
-import { Text } from "react-native";
+import { Alert, Text } from "react-native";
 import { View } from "react-native";
 import { SafeAreaView, TextInput } from "react-native";
 import { RadioButton } from "react-native-paper";
@@ -17,6 +17,7 @@ import Toast, { BaseToast } from "react-native-toast-message";
 import { KeyboardAvoidingView } from "react-native";
 import { Modal, ScrollView, Button, StyleSheet } from "react-native";
 import { HOST } from "../../utils/Host-URL";
+import CustomSelect from "../../components/common/CustomSelect/CustomSelect";
 
 const Outcomes = () => {
   const dispatch = useDispatch();
@@ -35,6 +36,7 @@ const Outcomes = () => {
   const [selectedEndDate, setSelectedEndDate] = useState(null);
   const [isDatePicker1Visible, setDatePicker1Visibility] = useState(false);
   const [isDatePicker2Visible, setDatePicker2Visibility] = useState(false);
+  const [milestoneProgress , setMilestoneProgress] = useState("")
 
   const milestonedata = useSelector((state) => state.milestonedata);
   const data = useSelector((state) => state.settingmilestonedata.milestone);
@@ -117,25 +119,22 @@ const Outcomes = () => {
     return date.toLocaleDateString(undefined, options);
   };
 
-  console.log(milestoneData);
 
   const milestonecelebration1 = (itemValue) => {
-    setCelebrations(itemValue);
+    setCelebrations(itemValue.value);
     dispatch({
       type: reduxAction.UPDATE_MILESTONE_DATA,
-      payload: { ...milestonedata, milestonecelebration: itemValue },
+      payload: { ...milestonedata, milestonecelebration: itemValue.value },
     });
   };
 
-  // const milestoneprogress1 = (e) => {
-  //   dispatch({
-  //     type: reduxAction.UPDATE_MILESTONE_DATA,
-  //     payload: { ...milestonedata, milestoneprogress: e},
-  //   });
-  // };
+  const milestoneprogress1 = (e) => {
+    console.log(e);
+    setMilestoneProgress(e)
+  };
 
   const addmilestonedata = () => {
-    setModalVisible(false);
+
     const milestonedata = {
       action:1,
       name: milestonename,
@@ -143,19 +142,33 @@ const Outcomes = () => {
       startDate: milestonestartdate,
       targetDate: milestoneenddate,
       celebration: milestonecelebration,
-      progress:50
+      progress: milestoneProgress
     };
-    dispatch({
-      type: reduxAction.ADD_GROUP_MILESTONE_DATA,
-      payload: { ...milestoneData, milestone: [...data, milestonedata] },
-    });
-    setInputValue("");
-    setCelebrations("");
-    setProgress("");
-    setSelectedStartDate("");
-    setSelectedEndDate("");
-  };
 
+    console.log(milestoneProgress);
+
+    const checkValues = Object.keys(milestonedata).every((key, value)=> {
+      return milestonedata[key] !== "";
+    })
+
+    if(checkValues){
+          setModalVisible(false);
+          dispatch({
+            type: reduxAction.ADD_GROUP_MILESTONE_DATA,
+            payload: { ...milestoneData, milestone: [...data, milestonedata] },
+          });
+          setInputValue("");
+          setCelebrations("");
+          setProgress("");
+          setSelectedStartDate("");
+          setSelectedEndDate("");
+          setMilestoneProgress('')
+        }else{
+          Alert.alert('fill all the Details!',);
+        }
+    }
+
+  // console.log(milestoneData);
   
   const showToast = () => {
     Toast.show({
@@ -196,6 +209,35 @@ const Outcomes = () => {
     },
   });
 
+  const handleOutcomeChoice = (val) => {
+    setMilestone(val)
+    if(val === 'yes'){
+      dispatch({
+        type: reduxAction.ADD_GROUP_MILESTONE_DATA,
+        payload: { ...milestoneData, breakdown: 1 },
+      });
+    }else{
+      dispatch({
+        type: reduxAction.ADD_GROUP_MILESTONE_DATA,
+        payload: { ...milestoneData, breakdown: 0 },
+      });
+    }
+  }
+
+  const handleOnMilestoneDelete = (index) => {
+
+    const filteredMilestoneData = data.filter((mileArr)=>(
+      mileArr.name !== data[index].name
+    ))
+
+    console.log(filteredMilestoneData);
+
+    dispatch({
+      type: reduxAction.ADD_GROUP_MILESTONE_DATA,
+      payload: { ...milestoneData, milestone: filteredMilestoneData },
+    });
+  }
+
   const handlesubmit = async (next) => {
     var myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
@@ -205,37 +247,50 @@ const Outcomes = () => {
       body: JSON.stringify(milestoneData),
       redirect: "follow",
     };
-    console.log(requestOptions.body);
 
-    await fetch(
-      `http://dev.trackability.net.au:8082/api/goals/outcomes/add/outcome/`,
-      requestOptions
-    )
-      .then((res) =>
-        res.json().then((result) => {
-          if (result.responseStatus === 400) {
-            console.log(result.responseMessage);
-          }
-          if (result.responseStatus === 200) {
-            showToast();
-            dispatch({
-              type:reduxAction.CHANGE_GOAL_PAGE,
-              payload: 2
-            })
-          } else {
-            console.log(result);
-          }
-        })
+    const checkValues = Object.keys(JSON.parse(requestOptions.body)).every((key, value)=> {
+      if (milestoneData.breakdown === 0 && key === milestoneData.milestone) {
+        return true;
+      }
+      return JSON.parse(requestOptions.body)[key] !== "";
+    })
+
+    if(checkValues){
+      await fetch(
+        `http://dev.trackability.net.au:8082/api/goals/outcomes/add/outcome/`,
+        requestOptions
       )
-      .catch((err) => console.log(err));
+        .then((res) =>
+          res.json().then((result) => {
+            if (result.responseStatus === 400) {
+              console.log(result.responseMessage);
+            }
+            if (result.responseStatus === 200) {
+              showToast();
+              dispatch({
+                type:reduxAction.CHANGE_GOAL_PAGE,
+                payload: 2
+              })
+            } else {
+              Alert.alert(result.responseMessage);
+            }
+          })
+        )
+        .catch((err) => console.log(err));
+
+    }else{
+      Alert.alert('fill all the values!',);
+    }
+
   };
 
   return (
     <PaperProvider>
+      <ScrollView>
       <SafeAreaView
-        className="p-4"
-        style={{ marginTop: -10, backgroundColor: "white" }}
+        className="p-2 bg-white min-h-screen "
       >
+
         <View className="pb-5">
           <Text
             className="text-lg font-popMedium mb-3"
@@ -261,7 +316,7 @@ const Outcomes = () => {
           </Text>
           <View className="mb-4">
             <RadioButton.Group
-              onValueChange={(newValue) => setMilestone(newValue)}
+              onValueChange={(newValue) => handleOutcomeChoice(newValue)}
               value={milestone}
             >
               <View className="flex-row">
@@ -277,45 +332,31 @@ const Outcomes = () => {
             </RadioButton.Group>
           </View>
           <View>
-            <View className="flex flex-row mt-2">
-              <Text
-                className="text-lg font-popMedium pb-1 mr-20"
-                style={{ color: "#263238" }}
-              >
-                Milestones
-              </Text>
-              <View className="flex flex-row ml-20">
-                {milestone === "yes" ? (
-                  <TouchableOpacity
-                    className="flex flex-row ml-7"
-                    onPress={() => setModalVisible(true)}
-                  >
-                    <Ionicons
-                      name="add-circle-outline"
-                      size={25}
-                      color={"#0D2B68"}
-                    />
-                    <Text
-                      className="text-lg font-popMedium pb-1"
-                      style={{ color: "#0D2B68" }}
-                    >
+          <View className="flex flex-row mt-2 justify-between">
+              <Text className="text-lg font-popMedium pb-1" style={{ color: '#263238' }}>Milestones</Text>
+              <View className="flex flex-row">
+                {milestone === 'yes' && milestoneData.milestone.length <= 3 ?
+                  <TouchableOpacity className="flex flex-row" onPress={() => setModalVisible(true)}>
+                    <Ionicons name="add-circle-outline" size={25} color={'#0D2B68'} />
+                    <Text className="text-lg font-popMedium pb-1" style={{ color: '#0D2B68' }}>
                       ADD
                     </Text>
                   </TouchableOpacity>
-                ) : null}
+                  : null}
               </View>
             </View>
           </View>
 
+  <View >
           {data.map((data, index) => {
             return (
               data.name !== null && (
                 <View
                   key={index}
-                  className="border h-[18vh] my-1 rounded p-4"
+                  className="border my-1 rounded p-4"
                   style={{ borderColor: "#D0D2D2" }}
                 >
-                  <View className="flex flex-row">
+                  <View className="flex flex-row justify-between">
                     <View>
                       <Text
                         className="text-lg font-popMedium"
@@ -331,7 +372,7 @@ const Outcomes = () => {
                       </Text>
                     </View>
                   </View>
-                  <TouchableOpacity>
+                  <TouchableOpacity onPress={()=>{handleOnMilestoneDelete(index)}} >
                     <Ionicons
                       name="trash-outline"
                       style={{ position: "absolute", bottom: 30, left: 310 }}
@@ -384,7 +425,7 @@ const Outcomes = () => {
                     </View>
                   </View>
                   <View
-                    style={{ height: 500, width: "100%", alignItems: "center" }}
+                    style={{ width: "100%",paddingVertical:10 }}
                   >
                     <Progress.Bar
                       progress={0.45}
@@ -400,6 +441,7 @@ const Outcomes = () => {
               )
             );
           })}
+  </View>
 
           <View style={styles.container}>
             <Portal>
@@ -437,7 +479,7 @@ const Outcomes = () => {
                           Milestone Name
                         </Text>
                         <TextInput
-                          className="border p-3 text-lg rounded mb-3"
+                          className="border p-3 text-lg rounded mb-3 font-popMedium placeholder:font-popMedium"
                           style={{ borderColor: "#D0D2D2" }}
                           placeholderTextColor={"#54585A"}
                           onChangeText={milestonename1}
@@ -451,14 +493,14 @@ const Outcomes = () => {
                           Description
                         </Text>
                         <TextInput
-                          className="border h-[10vh] rounded pb-10 pl-3 text-lg mb-3"
+                          className="border h-[10vh] rounded pb-10 pl-3 text-lg mb-3 font-popMedium placeholder:font-popMedium"
                           style={{ borderColor: "#D0D2D2" }}
                           placeholderTextColor={"#54585A"}
                           onChangeText={milestonedesc1}
                           inputValue={milestonedesc}
                           placeholder="Enter Description"
                         />
-                        <View className="fle flex-row">
+                        <View className="fle flex-row px-5">
                           <Text
                             className="text-lg font-popMedium mr-10"
                             style={{ color: "#263238" }}
@@ -530,51 +572,19 @@ const Outcomes = () => {
                             onCancel={hideDatePicker}
                           />
                         </View>
-                        <View className="flex flex-row mt-2">
-                          <Text
-                            className="text-lg font-popMedium mr-12"
-                            style={{ color: "#263238" }}
-                          >
-                            Celebrations
-                          </Text>
-                          <Text
-                            className="text-lg font-popMedium "
-                            style={{ color: "#263238" }}
-                          >
-                            Progress
-                          </Text>
-                        </View>
-                        <View className="flex justify-evenly flex-row gap-5 px-3">
-                          <View
-                            className="border rounded w-40 "
-                            style={{ borderColor: "#D0D2D2" }}
-                          >
-                            <Picker
-                              selectedValue={celebrations}
-                              onValueChange={(itemValue) =>
-                                milestonecelebration1(itemValue)
-                              }
-                            >
-                              <Picker.Item label="Select" value="select" />
-                              <Picker.Item label="Yes" value="Yes" />
-                              <Picker.Item label="No" value="No" />
-                            </Picker>
+                        <View className='flex flex-row gap-x-10 px-5 mt-2'>
+                            <Text className="text-lg font-popMedium" style={{ color: '#263238' }}>Celebrations</Text>
+                            <Text className="text-lg font-popMedium " style={{ color: '#263238' }}>Progress</Text>
                           </View>
-                          <View
-                            className="border rounded w-40 "
-                            style={{ borderColor: "#D0D2D2" }}
-                          >
-                            <Picker
-                              selectedValue={progress}
-                              onValueChange={(itemValue) =>
-                                setProgress(itemValue)
-                              }
-                            >
-                              <Picker.Item label="40%" value="No" />
-                              <Picker.Item label="50%" value="Yes" />
-                            </Picker>
+                          <View className='flex justify-evenly flex-row gap-3'>
+                            <View className="w-40 border-[0.5px] rounded"  >
+                              <CustomSelect
+                              onChange={milestonecelebration1}
+                              data={[{ label: "Yes", value: "Yes"},{label: "No", value: "No"}]}/>
+                            </View>
+                            <TextInput className="border w-40  rounded p-2 pl-5 text-lg font-popMedium placeholder:font-popMedium" style={{ borderColor: '#D0D2D2' }}
+                              placeholderTextColor={'#54585A'} keyboardType='numeric' value={milestoneProgress} onChangeText={milestoneprogress1} placeholder='%' />
                           </View>
-                        </View>
                       </View>
                       <TouchableOpacity
                         onPress={addmilestonedata}
@@ -600,6 +610,8 @@ const Outcomes = () => {
             </Text>
           </TouchableOpacity>
       </SafeAreaView>
+          </ScrollView>
+
     </PaperProvider>
   );
 };

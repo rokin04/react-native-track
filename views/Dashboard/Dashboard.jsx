@@ -132,10 +132,10 @@ const Dashboard = ({navigation}) => {
                 <Text className="font-PopLight text-white text-xs">
                   Progress
                 </Text>
-                <Text className="font-PopLight text-white text-sm">80%</Text>
+                <Text className="font-PopLight text-white text-sm">0%</Text>
               </View>
               <Progress.Bar
-                progress={0.8}
+                progress={0.02}
                 width={220}
                 color="#ffb703"
                 style={{ backgroundColor: "#E4E9EB", borderColor: "#E4E9EB" }}
@@ -143,19 +143,19 @@ const Dashboard = ({navigation}) => {
             </View>
             <View className="flex flex-row justify-between ">
               <View className="flex flex-col items-center justify-center mt-1">
-                <Text className='font-popMedium text-white text-base"'>10</Text>
+                <Text className='font-popMedium text-white text-base"'>{goalSummaryDataCollection.length}</Text>
                 <Text className="font-PopLight text-white text-[10px]">
                   To DO
                 </Text>
               </View>
               <View className="flex flex-col items-center justify-center mt-1">
-                <Text className='font-popMedium text-white text-base"'>07</Text>
+                <Text className='font-popMedium text-white text-base"'>00</Text>
                 <Text className="font-PopLight text-white text-[10px]">
                   In Progress
                 </Text>
               </View>
               <View className="flex flex-col items-center justify-center mt-1">
-                <Text className='font-popMedium text-white text-base"'>04</Text>
+                <Text className='font-popMedium text-white text-base"'>00</Text>
                 <Text className="font-PopLight text-white text-[10px]">
                   Completed
                 </Text>
