@@ -9,13 +9,14 @@ const CustomSelect = ({
     onChange = () => {},
     initialValue = "",
     search=false,
-    placeholder="Select item"
+    placeholder="Select item",
+    customStyles={}
   }) => {
   const [value, setValue] = useState(initialValue);
 
   return (
     <Dropdown
-      style={styles.dropdown}
+      style={{...styles.dropdown, ...customStyles}}
       placeholderStyle={styles.placeholderStyle}
       selectedTextStyle={styles.selectedTextStyle}
       inputSearchStyle={styles.inputSearchStyle}
@@ -43,7 +44,8 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 5,
     height: 50,
-    // borderWidth: 0.5,
+    borderWidth: 0.5,
+    width: '100%'
   },
   icon: {
     marginRight: 5,
