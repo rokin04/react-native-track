@@ -11,6 +11,8 @@ import { Platform } from 'react-native';
 import styles from '../Login/login.style';
 import OtpModal from './OtpModal';
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { CustomSelect } from '../../components';
+import useToast from '../../hooks';
 
 const countries = [
   { code: "AU", label: "Australia", countryCode: "61" },
@@ -34,6 +36,7 @@ const Register = ({ navigation }) => {
   const pickerRef = useRef();
   const emailRef = useRef("");
   const phoneNoRef = useRef("");
+  const { successToast, errorToast } = useToast();
 
   const handleOnCountryCodeChange = (itemValue) => {
     setCountryCode(itemValue);
@@ -50,7 +53,7 @@ const Register = ({ navigation }) => {
 
   const INITIAL_FORM_STATE = {
     firstName: "",
-    lastName: selectedRole === 4 ? "Provider" : "",
+    lastName: "",
     phoneNo: "",
     email: "",
   };
@@ -96,9 +99,9 @@ const Register = ({ navigation }) => {
       .then((result) => {
         if (result.responseStatus === 200) {
           setIsOtpModalOpen(true);
-          Alert.alert("Success! Please Verify", result.responseMessage, [{ text: "OK", onPress: () => { } }]);
+          successToast(result);
         } else {
-          Alert.alert("Error", result.responseMessage, [{ text: "OK", onPress: () => { } }]);
+          errorToast(result);
         }
       })
       .catch((error) => console.log("error", error));
@@ -141,16 +144,16 @@ const Register = ({ navigation }) => {
             </Text>
           </View>
           <View style={styles.roleContainer}>
-            {roleData.length > 0 && (
-              <DropDownCustom
-                selectedValue={selectedRole}
-                onValueChange={(itemValue) => setSelectedRole(itemValue)}
-                data={roleData}
-                disabled={roleData.length == 0}
-                width={"85%"}
-                backgroundColor={COLORS.secondary}
+          {
+            roleData.length > 0 && (
+              <CustomSelect
+                initialValue={selectedRole}
+                data={roleData.map(item => ({ label: item.name, value: item.id }))}
+                onChange={(itemValue) => setSelectedRole(itemValue.value)}
+                customStyles={{backgroundColor: COLORS.secondary, borderWidth: 0, color: 'white'}}
               />
-            )}
+            )
+          }
           </View>
           <Formik initialValues={INITIAL_FORM_STATE}
             validationSchema={FORM_VALIDATION}
@@ -189,16 +192,16 @@ const Register = ({ navigation }) => {
             </Text>
           </View>
           <View style={styles.roleContainer}>
-            {roleData.length > 0 && (
-              <DropDownCustom
-                selectedValue={selectedRole}
-                onValueChange={(itemValue) => setSelectedRole(itemValue)}
-                data={roleData}
-                disabled={roleData.length == 0}
-                width={"85%"}
-                backgroundColor={COLORS.secondary}
+          {
+            roleData.length > 0 && (
+              <CustomSelect
+                initialValue={selectedRole}
+                data={roleData.map(item => ({ label: item.name, value: item.id }))}
+                onChange={(itemValue) => setSelectedRole(itemValue.value)}
+                customStyles={{backgroundColor: COLORS.secondary, borderWidth: 0, color: 'white'}}
               />
-            )}
+            )
+          }
           </View>
           <Formik initialValues={INITIAL_FORM_STATE}
             validationSchema={FORM_VALIDATION}
@@ -227,16 +230,14 @@ const Register = ({ navigation }) => {
                   </View>
                   {touched.lastName && errors.lastName && <Text style={styles.errorText}>{errors.lastName}</Text>}
                   <View style={styles.inputWrapper}>
-                    <DropDownCustom
-                      selectedValue={countryCode}
-                      onValueChange={handleOnCountryCodeChange}
+                    <CustomSelect
+                      initialValue={countryCode}
                       data={countries.map((data) => ({
-                        id: data.countryCode,
-                        name: data.label,
+                        value: data.countryCode,
+                        label: data.label,
                       }))}
-                      disabled={false}
-                      width={"40%"}
-                      backgroundColor={"lightgrey"}
+                      onChange={handleOnCountryCodeChange}
+                      customStyles={{backgroundColor: "lightgrey", borderWidth: 0, color: 'white', width: '30%'}}
                     />
                     <TextInput
                       keyboardType="numeric"
@@ -253,8 +254,8 @@ const Register = ({ navigation }) => {
                         <Text style={{ color: COLORS.lighticon}}>Verify</Text>
                       </TouchableOpacity>
                       :
-                      <TouchableOpacity style={styles.iconWrapper} onPress={handleVerifyPhoneNo}>
-                        <Text style={{ color: COLORS.secondary }}>Verify</Text>
+                      <TouchableOpacity disabled style={styles.iconWrapper} onPress={handleVerifyPhoneNo}>
+                        <Text style={{ color: COLORS.otpBtn.grey }}>Verify</Text>
                       </TouchableOpacity>
                     }
                   </View>
@@ -280,8 +281,8 @@ const Register = ({ navigation }) => {
                         <Text style={{ color: COLORS.lighticon }}>Verify</Text>
                       </TouchableOpacity>
                       :
-                      <TouchableOpacity style={styles.iconWrapper} onPress={handleVerifyEmail}>
-                        <Text style={{ color: COLORS.secondary }}>Verify</Text>
+                      <TouchableOpacity disabled style={styles.iconWrapper} onPress={handleVerifyEmail}>
+                        <Text style={{ color: COLORS.otpBtn.grey }}>Verify</Text>
                       </TouchableOpacity>
                     }
                   </View>

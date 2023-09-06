@@ -5,11 +5,10 @@ import { Dimensions } from 'react-native';
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    display: 'flex',
+    justifyContent: 'center',
     width: Dimensions.get('window').width,
-    height: Dimensions.get('window').height,
     backgroundColor: "white",
-    justifyContent: 'space-between',
   },
   textContainer: {
     marginTop: 20,
@@ -37,7 +36,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginTop: 20,
-    width: "100%",
+    width: "85%",
     overflow: 'hidden',
   },
 
