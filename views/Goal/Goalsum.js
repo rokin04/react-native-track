@@ -10,7 +10,7 @@ import {
   ScrollView,
 } from "react-native";
 import { COLORS, SHADOWS, SIZES, IMAGES, FONT, ICONS } from "../../constants";
-import { TextInput  , ActivityIndicator } from "react-native";
+import { TextInput, ActivityIndicator } from "react-native";
 import { Button } from "react-native";
 import { RadioButton } from "react-native-paper";
 import { Picker } from "@react-native-picker/picker";
@@ -21,10 +21,10 @@ import reduxAction from "../../redux/action";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import Toast, { BaseToast } from "react-native-toast-message";
 import Achiever from "../../components/ForGoalSum/Achiever";
-import CustomSelect  from '../../components/common/CustomSelect/CustomSelect';
+import CustomSelect from '../../components/common/CustomSelect/CustomSelect';
+import useToast from "../../hooks";
 
-
-const Goalsum = ({navigation}) => {
+const Goalsum = ({ navigation }) => {
   const [nextPage, setNaxtPage] = useState(false);
 
   const dispatch = useDispatch();
@@ -38,7 +38,8 @@ const Goalsum = ({navigation}) => {
   const [isDatePicker1Visible, setDatePicker1Visibility] = useState(false);
   const [isDatePicker2Visible, setDatePicker2Visibility] = useState(false);
   const [RecurringFor, setRecurringFor] = useState("");
-  const [loading ,setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
+  const { successToast, errorToast } = useToast();
 
   const {
     goalPriority,
@@ -96,7 +97,6 @@ const Goalsum = ({navigation}) => {
 
   const formatDate = (date) => {
     if (!date) return "";
-
     const options = { day: "2-digit", month: "2-digit", year: "numeric" };
     return date.toLocaleDateString(undefined, options);
   };
@@ -105,19 +105,6 @@ const Goalsum = ({navigation}) => {
     dispatch({
       type: reduxAction.UPDATE_GOAL_SUMMARY_DATA,
       payload: { ...goalSummaryData, goalSelectedSubOption: "" },
-    });
-  };
-
-  const showToast = () => {
-    Toast.show({
-      type: "success",
-      text1: "Goal-Summary saved successfully!",
-    });
-  };
-  const showErrorToast = () => {
-    Toast.show({
-      type: "tomatoToast",
-      props: { text: "Bad Request!" },
     });
   };
 
@@ -178,6 +165,7 @@ const Goalsum = ({navigation}) => {
       payload: { ...goalSummaryData, goalDescription: e },
     });
   };
+
   const handleOnShareGoalTo = (e) => {
     dispatch({
       type: reduxAction.UPDATE_GOAL_SUMMARY_DATA,
@@ -244,48 +232,43 @@ const Goalsum = ({navigation}) => {
       redirect: "follow",
     };
 
-    // console.log(JSON.parse(requestOptions.body));
-
-    const checkValues = Object.keys(JSON.parse(requestOptions.body)).every((key, value)=> {
+    const checkValues = Object.keys(JSON.parse(requestOptions.body)).every((key, value) => {
       if (goalSelectedSubOption !== "" && key === 'area_custom') {
         return true;
       }
       return JSON.parse(requestOptions.body)[key] !== "";
     })
 
-      if(checkValues){
-        fetch(
-          `http://dev.trackability.net.au:8082/goals/summary/save/${2165}`,
-          requestOptions
+    if (checkValues) {
+      fetch(
+        `http://dev.trackability.net.au:8082/goals/summary/save/${2165}`,
+        requestOptions
+      )
+        .then((res) =>
+          res.json().then((data) => {
+            if (data.responseStatus === 200) {
+              const goalData = JSON.parse(requestOptions.body)
+              successToast(data);
+              dispatch({
+                type: reduxAction.CHANGE_GOAL_PAGE,
+                payload: 1
+              });
+              dispatch({
+                type: reduxAction.ADD_GOALSUM_COLLECTION,
+                payload: [...goalSummaryDataCollection, goalData]
+              })
+            } else if (data.responseStatus === 400) {
+              errorToast(data);
+            }
+          })
         )
-          .then((res) =>
-            res.json().then((data) => {
-              if (data.responseStatus === 200) {
-    
-                const goalData = JSON.parse(requestOptions.body)
-    
-                showToast();
-                  dispatch({
-                    type:reduxAction.CHANGE_GOAL_PAGE,
-                    payload: 1
-                  })
-                  dispatch({
-                    type:reduxAction.ADD_GOALSUM_COLLECTION,
-                    payload: [ ...goalSummaryDataCollection , goalData ]
-                  })
-              } else if (data.responseStatus === 400) {
-                console.log(data.responseMessage );
-                Alert.alert(data.responseMessage );
-              }
-            })
-          )
-          .catch(console.log("hay"));
-      }else{
-        Alert.alert('fill all the values!',);
-      }
+        .catch(() => Alert.alert('fill all the values!'));
+    } else {
+      Alert.alert('fill all the values!',);
+    }
   };
 
-  
+
 
   useEffect(() => {
     if (goalArea === "Select") {
@@ -307,8 +290,7 @@ const Goalsum = ({navigation}) => {
   }, [goalArea]);
 
   return (
-    <ScrollView className="p-2 mb-10" style={{ backgroundColor: "white" }}>
-            {/* <ActivityIndicator size={50} color={'#019FFE'} className='absolute top-1/2 bg-black opacity-20 p-20 w-full mr-20 rounded-lg ' /> */}
+    <ScrollView className="p-2" style={{ backgroundColor: "white" }}>
       <SafeAreaView className="flex flex-col justify-between gap-5 mb-5">
         <View>
           <Text className="text-[15px] font-popMedium m-1">Goal Title</Text>
@@ -327,15 +309,15 @@ const Goalsum = ({navigation}) => {
             >
               <View className="flex flex-row">
                 <View className="flex flex-row justify-center items-center">
-                  <RadioButton.Android value="High" />
+                  <RadioButton.Android color="green" value="High" />
                   <Text className="text-sm font-popMedium">High</Text>
                 </View>
                 <View className="flex flex-row justify-center items-center">
-                  <RadioButton.Android value="Medium" />
+                  <RadioButton.Android color="green" value="Medium" />
                   <Text className="text-sm font-popMedium">Medium</Text>
                 </View>
                 <View className="flex flex-row justify-center items-center">
-                  <RadioButton.Android value="Low" />
+                  <RadioButton.Android color="green" value="Low" />
                   <Text className="text-sm font-popMedium">Low</Text>
                 </View>
               </View>
@@ -357,20 +339,19 @@ const Goalsum = ({navigation}) => {
             >
               <View className="flex flex-row ">
                 <View className="flex flex-row justify-center items-center">
-                  <RadioButton value="Select" />
+                  <RadioButton.Android color="green" value="Select" />
                   <Text className="text-sm font-popMedium">
                     Select Goal Area
                   </Text>
                 </View>
                 <View className="flex flex-row justify-center items-center">
-                  <RadioButton value="Enter" />
+                  <RadioButton.Android color="green" value="Enter" />
                   <Text className="text-sm font-popMedium">
                     Enter Your Goal Area
                   </Text>
                 </View>
               </View>
             </RadioButton.Group>
-
             {goalSelectedSubOption || customGoalArea ? (
               customGoalArea ? (
                 <Text className="text-lg font-popMedium text-center capitalize">
@@ -420,17 +401,17 @@ const Goalsum = ({navigation}) => {
           </Text>
           <View>
             <RadioButton.Group onValueChange={handleOnGoalFor} value={goalFor}>
-              <View className="flex flex-row py-1 justify-evenly">
+              <View className="flex flex-row py-1 justify-between">
                 <View className="flex flex-row justify-center items-center">
-                  <RadioButton.Android value="Self" />
+                  <RadioButton.Android color="green" value="Self" />
                   <Text className="text-sm font-popMedium">Self</Text>
                 </View>
                 <View className="flex flex-row justify-center items-center">
-                  <RadioButton.Android value="Someone" />
+                  <RadioButton.Android color="green" value="Someone" />
                   <Text className="text-sm font-popMedium">Someone Else</Text>
                 </View>
                 <View className="flex flex-row justify-center items-center">
-                  <RadioButton.Android value="Group" />
+                  <RadioButton.Android color="green" value="Group" />
                   <Text className="text-sm font-popMedium">For Group</Text>
                 </View>
               </View>
@@ -463,21 +444,21 @@ const Goalsum = ({navigation}) => {
                 {GoalFordata.map((data, index) => {
                   return (
                     data.name !== null && (
-                      <TouchableOpacity
-                        onPress={() => {
-                          handleOnDeletePerson(index);
-                        }}
-                        key={index}
-                      >
-                        <View className="rounded-xl p-[2px] px-5 bg-gray-200 flex flex-row items-center">
-                          <Text className="font-popMedium "> {data.name} </Text>
+                      <View className="rounded-xl p-[2px] px-2 bg-gray-200 flex flex-row justify-between">
+                        <Text className="font-popMedium "> {data.name} </Text>
+                        <TouchableOpacity
+                          onPress={() => {
+                            handleOnDeletePerson(index);
+                          }}
+                          key={index}
+                        >
                           <Ionicons
                             name="close-circle"
                             size={20}
                             color="gray"
                           />
-                        </View>
-                      </TouchableOpacity>
+                        </TouchableOpacity>
+                      </View>
                     )
                   );
                 })}
@@ -518,11 +499,11 @@ const Goalsum = ({navigation}) => {
             >
               <View className="flex flex-row pb-2">
                 <View className="flex flex-row justify-center items-center">
-                  <RadioButton.Android value="Recurring" />
+                  <RadioButton.Android color="green" value="Recurring" />
                   <Text className="text-sm font-popMedium">Recurring</Text>
                 </View>
                 <View className="flex flex-row justify-center items-center">
-                  <RadioButton.Android value="One-Time" />
+                  <RadioButton.Android color="green" value="One-Time" />
                   <Text className="text-sm font-popMedium">
                     One-Time Achievement
                   </Text>
@@ -599,34 +580,9 @@ const Goalsum = ({navigation}) => {
           onChangeText={handleOnGoalDescription}
           value={goalDescription}
           multiline
+          numberOfLines={4}
           className="border min-h-[13vh] p-1 my-2 rounded text-[15px] font-popMedium"
         ></TextInput>
-
-        {/* <View>
-              <Text className="text-[15px] font-popMedium mx-2">
-                Share Your Goal to
-              </Text>
-              <View>
-                <RadioButton.Group
-                  onValueChange={handleOnShareGoalTo}
-                  value={shareGoalTo}
-                >
-                  <View className="flex flex-row">
-                    <View className="flex flex-row justify-center items-center">
-                      <RadioButton value="fam/Friends" />
-                      <Text className="text-sm font-popMedium">
-                        Family Friends/Colleagues
-                      </Text>
-                    </View>
-                    <View className="flex flex-row justify-center items-center">
-                      <RadioButton value="Reviewer" />
-                      <Text className="text-sm font-popMedium">Reviewer</Text>
-                    </View>
-                  </View>
-                </RadioButton.Group>
-              </View>
-            </View> */}
-
         <View className="ml-auto">
           <TouchableOpacity
             onPress={handleOnSave()}

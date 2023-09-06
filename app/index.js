@@ -46,10 +46,14 @@ export default function App() {
   LogBox.ignoreLogs(["EventEmitter.removeListener"]);
 
   const toastConfig = {
-
-    tomatoToast: ({ text1, props }) => (
-      <View style={{ height: 80, width: '95%', backgroundColor: 'white'  }} className='rounded-lg p-2 justify-center items-center' >
-        <Text className='text-[15px] font-popMedium text-red-500' >{props.text}</Text>
+    tomatoToast: ({ props }) => (
+      <View style={{ height: 80, width: '95%', backgroundColor: 'red'}} className='rounded-lg p-2 justify-center items-center' >
+        <Text className='text-[15px] font-popMedium text-white' >{props.text}</Text>
+      </View>
+    ),
+    successToast: ({ props }) => (
+      <View style={{ height: 80, width: '95%', backgroundColor: 'green'}} className='rounded-lg p-2 justify-center items-center' >
+        <Text className='text-[15px] font-popMedium text-white' >{props.text}</Text>
       </View>
     )
   };

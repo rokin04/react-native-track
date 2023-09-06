@@ -104,13 +104,13 @@ function Goal( {navigation} ) {
     <NavigationContainer independent={true}  >
 
       <Stack.Navigator >
-        {/* <Stack.Screen name="Home" component={Home} options={{ headerShown: false }} />
+        <Stack.Screen name="Home" component={Home} options={{ headerShown: false }} />
         <Stack.Screen name="Login" component={Login} />
         <Stack.Screen name="About" component={About} />
         <Stack.Screen name="Register" component={Register} />
         <Stack.Screen name="Forgot" component={ForgetPassword} />
         <Stack.Screen name="EnterOTP" component={EnterOTP} />
-        <Stack.Screen name="ResetPassword" component={ResetPassword} /> */}
+        <Stack.Screen name="ResetPassword" component={ResetPassword} />
         <Stack.Screen name="Dashboard" component={Dashboard} options={{ headerShown: false }} />
         <Stack.Screen name="Goal" component={Goal} options={{ headerStyle: { backgroundColor: "#019FFE", }, headerTintColor: "white" }} />
       </Stack.Navigator>

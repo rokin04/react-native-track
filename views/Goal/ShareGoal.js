@@ -577,7 +577,7 @@ const ShareGoal = ({ navigation }) => {
             >
               <View className="flex-row">
                 <View className="flex flex-row items-center">
-                  <RadioButton.Android value="people" />
+                  <RadioButton.Android color="green" value="people" />
                   <Text
                     className="text-md font-popMedium"
                     style={{ fontSize: 16, color: "#263238" }}
@@ -586,7 +586,7 @@ const ShareGoal = ({ navigation }) => {
                   </Text>
                 </View>
                 <View className="flex flex-row items-center">
-                  <RadioButton.Android value="reviewer" />
+                  <RadioButton.Android color="green" value="reviewer" />
                   <Text
                     className="text-md font-popMedium "
                     style={{ fontSize: 16, color: "#263238" }}

@@ -1,6 +1,5 @@
 export const initialState = {
   settingGroupGoal: [{ groupName: null, name: null, email: null }],
-
   settingmilestonedata: {
     breakdown: 0,
     expectedOutcome: "",
