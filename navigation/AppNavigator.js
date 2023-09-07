@@ -18,6 +18,7 @@ import ShareGoal from '../views/Goal/ShareGoal';
 import { ScrollView } from 'react-native';
 import Dashboard from '../views/Dashboard/Dashboard'
 import { useSelector } from 'react-redux';
+import Profile from '../views/Profile/Profile';
 
 const Stack = createStackNavigator();
 
@@ -99,20 +100,29 @@ function Goal( {navigation} ) {
     );
   }
   
-
   return (
     <NavigationContainer independent={true}  >
 
-      <Stack.Navigator >
-        <Stack.Screen name="Home" component={Home} options={{ headerShown: false }} />
+      <Stack.Navigator
+      screenOptions={{
+        headerTitleStyle: {
+          fontSize: 18,             
+          fontWeight: 'bold',     
+          color: 'white', 
+          fontFamily:FONT.medium
+        },
+      }}
+      >
+        {/* <Stack.Screen name="Home" component={Home} options={{ headerShown: false }} />
         <Stack.Screen name="Login" component={Login} />
         <Stack.Screen name="About" component={About} />
         <Stack.Screen name="Register" component={Register} />
         <Stack.Screen name="Forgot" component={ForgetPassword} />
         <Stack.Screen name="EnterOTP" component={EnterOTP} />
-        <Stack.Screen name="ResetPassword" component={ResetPassword} />
-        <Stack.Screen name="Dashboard" component={Dashboard} options={{ headerShown: false }} />
-        <Stack.Screen name="Goal" component={Goal} options={{ headerStyle: { backgroundColor: "#019FFE", }, headerTintColor: "white" }} />
+        <Stack.Screen name="ResetPassword" component={ResetPassword} /> */}
+        <Stack.Screen name="Profile" component={Profile}  options={{headerStyle: { backgroundColor: "#019FFE" }}} />
+        {/* <Stack.Screen name="Dashboard" component={Dashboard} options={{ headerShown: false }} />
+        <Stack.Screen name="Goal" component={Goal} options={{ headerStyle: { backgroundColor: "#019FFE", }, headerTintColor: "white" }} /> */}
       </Stack.Navigator>
 
     </NavigationContainer>

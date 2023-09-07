@@ -182,6 +182,8 @@ const ShareGoal = ({ navigation }) => {
       role: peoplerole,
       frequency: peoplepermissions,
     };
+    
+    console.log(shareFamilyData);
 
     dispatch({
       type: reduxAction.ADD_GROUP_FAMILY_DATA,
@@ -273,26 +275,27 @@ const ShareGoal = ({ navigation }) => {
   const editFamily = (targetIndex) => {
     setModalVisible1(true);
     const peopleEditor = familyData.find((_, index) => index === targetIndex);
-    setPeopleFName(peopleEditor.peoplefirstname);
-    setPeopleLName(peopleEditor.peoplelastname);
-    setPeopleEmail(peopleEditor.peopleemail);
-    setPeoplePhNo(peopleEditor.peoplephno);
-    setPeopleReason(peopleEditor.reasontoshare1);
-    setRole(peopleEditor.peoplerole);
-    setPermissions(peopleEditor.peoplepermissions);
+    setPeopleFName(peopleEditor.firstName);
+    setPeopleLName(peopleEditor.lastName);
+    setPeopleEmail(peopleEditor.email);
+    setPeoplePhNo(peopleEditor.phoneNo);
+    setPeopleReason(peopleEditor.shareReason);
+    setRole(peopleEditor.role);
+    setPermissions(peopleEditor.frequency);
     setEditFamilyData(targetIndex);
     setEditclick(true);
+    console.log(peopleEditor.firstName);
   };
 
   const updateFamilyData = () => {
     const updatedObject = {
-      peoplefirstname: peopleFName,
-      peoplelastname: peopleLName,
-      peopleemail: peopleEmail,
-      peoplephno: peoplePhNo,
-      reasontoshare1: peopleReason,
-      peoplerole: role,
-      peoplepermissions: permissions,
+      firstName: peopleFName,
+      lastName: peopleLName,
+      email: peopleEmail,
+      phoneNo: peoplePhNo,
+      shareReason: peopleReason,
+      role: role,
+      frequency: permissions,
     };
 
     const updatedArray = [...familyData];
@@ -302,6 +305,9 @@ const ShareGoal = ({ navigation }) => {
       type: reduxAction.ADD_GROUP_FAMILY_DATA,
       payload: updatedArray,
     });
+
+    console.log(updatedArray);
+    
     setPeopleFName("");
     setPeopleLName("");
     setPeopleEmail("");
@@ -916,7 +922,7 @@ const ShareGoal = ({ navigation }) => {
               <Formik
                 initialValues={INITIAL_FORM_STATE}
                 validationSchema={PEOPLE_SCHEMA}
-                onSubmit={(values, resetForm) =>
+                onSubmit={ (values, resetForm) =>
                   handleFamilySubmit(values, resetForm)
                 }
               >
@@ -970,7 +976,7 @@ const ShareGoal = ({ navigation }) => {
                               className="border p-3 text-lg rounded mb-2 font-popMedium placeholder:font-popMedium"
                               style={{ borderColor: "#D0D2D2" }}
                               placeholderTextColor={"#54585A"}
-                              value={values.peopleFName}
+                              value={values.peopleFName || peopleFName }
                               onChangeText={(value) => {
                                 handlePeopleFirstName(value);
                                 handleChange("peopleFName")(value);
@@ -995,7 +1001,7 @@ const ShareGoal = ({ navigation }) => {
                               className="border p-3 text-lg rounded mb-2 font-popMedium placeholder:font-popMedium"
                               style={{ borderColor: "#D0D2D2" }}
                               placeholderTextColor={"#54585A"}
-                              value={values.peopleLName}
+                              value={values.peopleLName || peopleLName}
                               onChangeText={(value) => {
                                 handlePeopleLastName(value);
                                 handleChange("peopleLName")(value);
@@ -1020,7 +1026,7 @@ const ShareGoal = ({ navigation }) => {
                               className="border p-3 text-lg rounded mb-2 font-popMedium placeholder:font-popMedium"
                               style={{ borderColor: "#D0D2D2" }}
                               placeholderTextColor={"#54585A"}
-                              value={values.peopleEmail}
+                              value={values.peopleEmail || peopleEmail}
                               onChangeText={(value) => {
                                 handlePeopleEmail(value);
                                 handleChange("peopleEmail")(value);
@@ -1046,7 +1052,7 @@ const ShareGoal = ({ navigation }) => {
                               style={{ borderColor: "#D0D2D2" }}
                               placeholderTextColor={"#54585A"}
                               keyboardType="numeric"
-                              value={values.peoplePhNo}
+                              value={values.peoplePhNo || peoplePhNo}
                               onChangeText={(value) => {
                                 handlePeoplePhNo(value);
                                 handleChange("peoplePhNo")(value);
@@ -1105,7 +1111,7 @@ const ShareGoal = ({ navigation }) => {
                               className="border p-3 text-lg rounded mb-2 font-popMedium placeholder:font-popMedium"
                               style={{ borderColor: "#D0D2D2" }}
                               placeholderTextColor={"#54585A"}
-                              value={values.peopleReason}
+                              value={values.peopleReason || peopleReason}
                               onChangeText={(value) => {
                                 handleReasonToShare1(value);
                                 handleChange("peopleReason")(value);
