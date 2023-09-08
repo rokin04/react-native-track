@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
   line: {
     borderBottomWidth: 1,
     borderColor: "#FBF6FF",
-    marginBottom: height * 0.025,
+    marginBottom: height * 0.015,
   },
   errorTxt: {
     color: "#e73725",
@@ -114,6 +114,14 @@ const styles = StyleSheet.create({
     height:height*0.06,
     width: width*0.26,
     backgroundColor:"#019FFE",
+    borderRadius:3,
+    alignItems:"center",
+    justifyContent:"space-evenly",
+  },
+  btnDisable:{
+    height:height*0.06,
+    width: width*0.26,
+    backgroundColor:"#BDD3FF",
     borderRadius:3,
     alignItems:"center",
     justifyContent:"space-evenly",
