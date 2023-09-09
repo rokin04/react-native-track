@@ -6,12 +6,15 @@ import { TextInput } from 'react-native';
 import { Formik } from 'formik';
 import { object, string } from 'yup';
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { HOST } from '../../utils/Host-URL';
+import { HOST } from '../../constants/Host-URL';
 import styles from './login.style';
 import CustomSelect from '../../components/common/CustomSelect/CustomSelect';
 import useToast from '../../hooks';
+import { useDispatch } from 'react-redux';
+import reduxAction from '../../redux/action';
 
 const Login = ({ navigation }) => {
+
   const [showPassword, setShowPassword] = useState(false);
   const [isSelected, setSelection] = useState(false);
   const [roleData, setRoleData] = useState([]);
@@ -19,6 +22,7 @@ const Login = ({ navigation }) => {
   const pickerRef = useRef();
   const { successToast, errorToast } = useToast();
   const appIcons = [ICONS.google, ICONS.facebook, ICONS.twitter, ICONS.linkedin]
+  const dispatch = useDispatch()
 
   const INITIAL_FORM_STATE = {
     email: "",
@@ -37,6 +41,9 @@ const Login = ({ navigation }) => {
   });
 
   const handleSubmit = (data) => {
+
+    console.log(data);
+
     var myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
     var requestOptions = {
@@ -55,7 +62,12 @@ const Login = ({ navigation }) => {
         .then((result) => {
           if (result.statusCode === 200) {
             successToast({responseMessage: result.message});
-            navigation.navigate('Goal')
+            navigation.navigate('Profile');
+            console.log(data.email);
+            dispatch({ type: reduxAction.SET_ROLEID, payload: result.roleId });
+            dispatch({ type: reduxAction.ADD_EMAIL_AFTER_LOGIN, payload: data.email });
+            successToast({responseMessage: result.message});
+
           } else {
             errorToast({responseMessage: result.message});
             }
@@ -96,8 +108,8 @@ const Login = ({ navigation }) => {
       <ScrollView contentContainerStyle={{ flexGrow: 1, alignItems: "center" }} overScrollMode={Platform.OS === 'android' ? "never" : "auto"}>
         <Logo flex={0} marginTop={10} />
         <View style={styles.textContainer}>
-          <Text style={styles.textHeading}>Hey, Hello <Text style={styles.handEmoji}>&#128075;</Text> </Text>
-          <Text style={styles.text}>Enter the information you entered while registering</Text>
+          <Text className='font-popMedium text-xl' >Hey, Hello <Text style={styles.handEmoji}>&#128075;</Text> </Text>
+          <Text className='font-popMedium text-sm'>Enter the information you entered while registering</Text>
         </View>
         <View className="w-[85%] mt-2">
           {
@@ -121,6 +133,7 @@ const Login = ({ navigation }) => {
               <View style={styles.inputWrapper}>
                 <TextInput
                   style={styles.input}
+                  className='font-popMedium'
                   placeholder="Enter Your Email"
                   onChangeText={handleChange("email")}
                   onBlur={handleBlur("email")}
@@ -136,6 +149,7 @@ const Login = ({ navigation }) => {
               <View style={styles.inputWrapper}>
                 <TextInput
                   style={styles.input}
+                  className='font-popMedium'
                   placeholder="Password"
                   onChangeText={handleChange("password")}
                   onBlur={handleBlur("password")}

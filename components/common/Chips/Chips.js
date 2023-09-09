@@ -11,6 +11,7 @@ import React, { useState, useRef } from "react";
 import { Styles } from "./ChipStyle";
 import icons from "../../../constants/icons";
 import styles from "../../../views/Profile/ProfileSetting/profile.style";
+import { Ionicons } from "@expo/vector-icons";
 
 const { height, width } = Dimensions.get("window");
 
@@ -70,14 +71,11 @@ const Chips = () => {
                   {item}
                 </Text>
                 <TouchableOpacity onPress={() => deleteChip(index)}>
-                <Image
-                  source={icons.cross}
-                  style={[
-                    Styles.image,
-                    index === selectedId &&
-                    { tintColor:"#fff" },
-                  ]}
-                />
+                <Ionicons
+                            name="close-circle"
+                            size={20}
+                            color="gray"
+                          />
                 </TouchableOpacity>
               </View>
             );
@@ -97,7 +95,11 @@ const Chips = () => {
         <TouchableOpacity
           style={[styles.rowView, Styles.btnPrimary]}
           onPress={() => addChip()}>
-          <Image source={icons.add} />
+           <Ionicons
+                            name="add-circle-outline"
+                            size={32}
+                            color="white"
+                          />
           <Text style={Styles.btnTxt}>ADD</Text>
         </TouchableOpacity>
       </View>

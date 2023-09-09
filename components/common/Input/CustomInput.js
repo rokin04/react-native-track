@@ -13,8 +13,10 @@ const CustomInput = (props) => {
         style={Styles.input}
         onChangeText={props.onChangeText}
         keyboardType={props.keyboardType}
-        onBlur={props.handleBlur}
+        onBlur={props.onBlur}
+        editable={props.editable}
         value={props.value}
+        onPressIn={props.onPress}
       />
     </View>
   );

@@ -4,6 +4,7 @@ import Slider1 from '../assets/images/slider-1.png';
 import Slider2 from '../assets/images/slider-2.png';
 import Slider3 from '../assets/images/slider-3.png';
 import FPI from '../assets/images/FPI.jpg';
+import ProfileImg from '../assets/images/ProfileImg.png';
 
 export default {
   LOGO,
@@ -11,5 +12,6 @@ export default {
   Slider1,
   Slider2,
   Slider3,
-  FPI
+  FPI,
+  ProfileImg
 };
