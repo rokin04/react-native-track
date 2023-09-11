@@ -4,10 +4,12 @@ import { HOST } from "../../../constants/Host-URL";
 import reduxAction from "../../../redux/action";
 
 const useSettings = (dispatch) => {
-  const userEmail = useSelector((state) => state.userEmail || "");
+  // const userEmail = useSelector((state) => state.userEmail || "");
+  const userEmail = 'roshan.b@giglabz.com';
   const userDetails = useSelector((state) => state.userDetails || "");
-  const roleId = useSelector((state) => state.roleId || "");
-  
+  // const roleId = useSelector((state) => state.roleId || "");
+  const roleId = 1;
+
   const getUserDetails = async () => {
     let data;
     await fetch(`${HOST}:8080/api/userprofile/get/${userEmail}/${roleId}`, {
