@@ -23,9 +23,9 @@ import Toast, { BaseToast } from "react-native-toast-message";
 import Achiever from "../../components/ForGoalSum/Achiever";
 import CustomSelect from '../../components/common/CustomSelect/CustomSelect';
 import useToast from "../../hooks";
+import { formatDate } from "../../utils/formatDate";
 
 const Goalsum = ({ navigation }) => {
-  const [nextPage, setNaxtPage] = useState(false);
 
   const dispatch = useDispatch();
   const goalSummaryData = useSelector((state) => state.goalSummaryData);
@@ -93,12 +93,6 @@ const Goalsum = ({ navigation }) => {
       type: reduxAction.UPDATE_GOAL_SUMMARY_DATA,
       payload: { ...goalSummaryData, targetDate: formatedDate },
     });
-  };
-
-  const formatDate = (date) => {
-    if (!date) return "";
-    const options = { day: "2-digit", month: "2-digit", year: "numeric" };
-    return date.toLocaleDateString(undefined, options);
   };
 
   const handleOnremoveSubSelect = () => {

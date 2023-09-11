@@ -102,7 +102,6 @@ const Outcomes = () => {
       type: reduxAction.UPDATE_MILESTONE_DATA,
       payload: { ...milestonedata, milestoneenddate: enddate },
     });
-    console.log(selectedEndDate);
   };
 
   // const showToast = () => {
@@ -129,7 +128,6 @@ const Outcomes = () => {
   };
 
   const milestoneprogress1 = (e) => {
-    console.log(e);
     setMilestoneProgress(e)
   };
 
@@ -144,8 +142,6 @@ const Outcomes = () => {
       celebration: milestonecelebration,
       progress: milestoneProgress
     };
-
-    console.log(milestoneProgress);
 
     const checkValues = Object.keys(milestonedata).every((key, value)=> {
       return milestonedata[key] !== "";
@@ -167,8 +163,6 @@ const Outcomes = () => {
           Alert.alert('fill all the Details!',);
         }
     }
-
-  // console.log(milestoneData);
   
   const showToast = () => {
     Toast.show({
@@ -230,8 +224,6 @@ const Outcomes = () => {
       mileArr.name !== data[index].name
     ))
 
-    console.log(filteredMilestoneData);
-
     dispatch({
       type: reduxAction.ADD_GROUP_MILESTONE_DATA,
       payload: { ...milestoneData, milestone: filteredMilestoneData },
@@ -263,7 +255,6 @@ const Outcomes = () => {
         .then((res) =>
           res.json().then((result) => {
             if (result.responseStatus === 400) {
-              console.log(result.responseMessage);
             }
             if (result.responseStatus === 200) {
               showToast();

@@ -30,12 +30,12 @@ const Styles = StyleSheet.create({
   input: {
     borderWidth: 1,
     borderColor: "#d0d2d2",
-    width: width * 0.9,
+    width: width * 0.96,
     height: height * 0.06,
     alignSelf: "center",
     borderRadius: 3,
     zIndex: -1,
-    marginVertical: height * 0.012,
+    marginVertical: height * 0.014,
     paddingHorizontal: width * 0.03,
     fontFamily: FONT.regular,
     fontSize: SIZES.medium,
@@ -50,5 +50,6 @@ const Styles = StyleSheet.create({
     fontSize: height * 0.018,
     paddingHorizontal: width * 0.01,
     marginTop: height * 0.001,
+    color: 'gray'
   },
 });

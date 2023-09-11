@@ -182,8 +182,6 @@ const ShareGoal = ({ navigation }) => {
       role: peoplerole,
       frequency: peoplepermissions,
     };
-    
-    console.log(shareFamilyData);
 
     dispatch({
       type: reduxAction.ADD_GROUP_FAMILY_DATA,
@@ -270,8 +268,6 @@ const ShareGoal = ({ navigation }) => {
     });
   };
 
-  // console.log(parameterdata);
-
   const editFamily = (targetIndex) => {
     setModalVisible1(true);
     const peopleEditor = familyData.find((_, index) => index === targetIndex);
@@ -284,7 +280,6 @@ const ShareGoal = ({ navigation }) => {
     setPermissions(peopleEditor.frequency);
     setEditFamilyData(targetIndex);
     setEditclick(true);
-    console.log(peopleEditor.firstName);
   };
 
   const updateFamilyData = () => {
@@ -305,8 +300,6 @@ const ShareGoal = ({ navigation }) => {
       type: reduxAction.ADD_GROUP_FAMILY_DATA,
       payload: updatedArray,
     });
-
-    console.log(updatedArray);
     
     setPeopleFName("");
     setPeopleLName("");
@@ -458,8 +451,6 @@ const ShareGoal = ({ navigation }) => {
 
     const {reviewer: { parametersToReview, reviewerList }} = ShareGoalData;
 
-    console.log(reviewerList?.length);
-
     if (reviewerList?.length > 0 && parametersToReview?.length > 0) {
         var myHeaders = new Headers();
         myHeaders.append("Content-Type", "application/json");
@@ -481,7 +472,7 @@ const ShareGoal = ({ navigation }) => {
                 navigation.navigate("Dashboard");
               }
               if (result.responseStatus === 400) {
-                console.log(result.responseMessage);
+
               }
             })
           )
@@ -554,8 +545,6 @@ const ShareGoal = ({ navigation }) => {
       // .max(50, 'Too Long!')
       .required("Required"),
   });
-
-  // console.log(familyData);
 
   return (
     <ScrollView className="p-2 bg-white">

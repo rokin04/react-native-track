@@ -5,7 +5,6 @@ import { FONT, SIZES } from '../../../constants';
 
 const { height, width } = Dimensions.get("window");
 
-
 const InputDropdown = ({data = [], width , title = '' , onChange = () => {} }) => {
   const [value, setValue] = useState(null);
   const [isFocus, setIsFocus] = useState(false);

@@ -7,7 +7,6 @@ const useSettings = (dispatch) => {
   const userEmail = useSelector((state) => state.userEmail || "");
   const userDetails = useSelector((state) => state.userDetails || "");
   const roleId = useSelector((state) => state.roleId || "");
-  const roleName = useSelector((state) => state.roleName || "");
   
   const getUserDetails = async () => {
     let data;
@@ -44,8 +43,10 @@ const useSettings = (dispatch) => {
   }
   
   useEffect(() => {
-    getUserDetails();
-  }, [roleName]);
+    if (userEmail && roleId) {
+      getUserDetails();
+    }
+  }, [userEmail, roleId]);
 
   useEffect(() => {
     if (userDetails && userDetails.ndisAgreement === 0 && userDetails.roleId === 1) {

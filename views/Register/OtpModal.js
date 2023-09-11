@@ -59,7 +59,6 @@ const OtpModal = ({ isOtpModalOpen, setIsOtpModalOpen, otpSelectedOption, otpSel
                 }
             })
             .catch((error) => {
-                console.log("error", error);
                 setError("Oops, something went wrong. Please try again later");
                 setTimer(0);
             });
@@ -70,9 +69,8 @@ const OtpModal = ({ isOtpModalOpen, setIsOtpModalOpen, otpSelectedOption, otpSel
     if(timer==0){
     setTimer(5);
     setOtpRequestedAgain(true);
-    setError('')
+    setError('');
     setOtp('');
-
     }
 };
     return (

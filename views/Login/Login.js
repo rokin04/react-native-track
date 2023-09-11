@@ -42,8 +42,6 @@ const Login = ({ navigation }) => {
 
   const handleSubmit = (data) => {
 
-    console.log(data);
-
     var myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/json");
     var requestOptions = {
@@ -63,7 +61,6 @@ const Login = ({ navigation }) => {
           if (result.statusCode === 200) {
             successToast({responseMessage: result.message});
             navigation.navigate('Profile');
-            console.log(data.email);
             dispatch({ type: reduxAction.SET_ROLEID, payload: result.roleId });
             dispatch({ type: reduxAction.ADD_EMAIL_AFTER_LOGIN, payload: data.email });
             successToast({responseMessage: result.message});
