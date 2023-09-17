@@ -423,6 +423,7 @@ const ProfileSetting = ({ navigation }) => {
           return res.json();
         })
         .then((data) => {
+          console.log(data);
           setAreaData(data.area);
         });
     }
@@ -763,13 +764,9 @@ const ProfileSetting = ({ navigation }) => {
                       title="Country"
                       initialValue={userDetails?.location || ''}
                       value={values.country}
-                      data={[{ value: "41", label: "Australia" }]}
+                      data={[{ value: "Australia", label: "Australia" }]}
                       search={true}
-                      onChange={(selectedObj) => {
-                        handleOnStateChange(selectedObj);
-                        handleChange("country")(selectedObj.value);
-                      }}
-                    />
+                      />
                   </View>
                   {touched.country && errors.country && (
                     <Text className="text-red-500 font-popMedium text-right text-xs">
@@ -812,7 +809,7 @@ const ProfileSetting = ({ navigation }) => {
                   <View className="w-[96vw] pb-4">
                     <CustomSelect
                       title="Area"
-                      initialValue={userDetails?.state || ''}
+                      initialValue={userDetails?.areaSuburban || ''}
                       value={values.areaSuburban}
                       data={areaData.length ? areaData.map(area => ({label: area.name, value: area.name, code: area.postalCode})) : []}
                       search={true}
