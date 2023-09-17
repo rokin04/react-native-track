@@ -7,11 +7,12 @@ import {
   TextInput,
   Dimensions,
 } from "react-native";
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Styles } from "./ChipStyle";
 import icons from "../../../constants/icons";
 import styles from "../../../views/Profile/ProfileSetting/profile.style";
 import { Ionicons } from "@expo/vector-icons";
+import { useSelector } from "react-redux";
 
 const { height, width } = Dimensions.get("window");
 
@@ -20,6 +21,7 @@ const Chips = () => {
   const [data, setData] = useState([]);
   const [selectedId, setSelectedId] = useState(null);
   const inputRef = useRef();
+  const userDetails = useSelector((state) => state.userDetails || "");
 
   const addChip = () => {
     let tempData = data;
@@ -43,6 +45,13 @@ const Chips = () => {
     setSelectedId(null);
   },500);
   };
+
+  useEffect(()=>{
+    if(userDetails.interests){
+      const data = userDetails.interests.map( data => (data.name) )
+      setData(data)
+    }
+  },[userDetails?.interests])
 
   return (
     <View>
