@@ -5,14 +5,14 @@ import reduxAction from "../../../redux/action";
 
 const useSettings = (dispatch) => {
   // const userEmail = useSelector((state) => state.userEmail || "");
-  const userEmail = 'roshan.b@giglabz.com';
+  const userEmail = 'roshan.b@giglabz.com'
   const userDetails = useSelector((state) => state.userDetails || "");
   // const roleId = useSelector((state) => state.roleId || "");
-  const roleId = 1;
-
+  const roleId = 1
   const getUserDetails = async () => {
     let data;
-    await fetch(`${HOST}:8080/api/userprofile/get/${userEmail}/${roleId}`, {
+    // await fetch(`${HOST}:8080/api/userprofile/get/${userEmail}/${roleId}`, {
+    await fetch(`${HOST}:8080/api/userprofile/get/roshan.b@giglabz.com/1`, {
       method: "GET",
       headers: {
         "Content-type": "application/json; charset=UTF-8",

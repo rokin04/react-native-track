@@ -47,9 +47,8 @@ const Styles = StyleSheet.create({
     alignSelf: "flex-start",
     backgroundColor: "#fff",
     marginHorizontal: width * 0.02,
-    fontSize: height * 0.018,
+    fontSize: SIZES.small,
     paddingHorizontal: width * 0.01,
-    marginTop: height * 0.001,
     color: 'gray'
   },
 });
