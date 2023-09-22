@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { View, Text, Image, SafeAreaView, TouchableOpacity, StyleSheet, Dimensions, Alert, ScrollView } from 'react-native';
 import { COLORS, SHADOWS, SIZES, IMAGES, FONT, ICONS } from '../../constants';
-import { DropDownCustom, Logo } from '../../components';
+import { Logo } from '../../components';
 import { TextInput } from 'react-native';
 import { Formik } from 'formik';
 import { object, string } from 'yup';
@@ -60,7 +60,7 @@ const Login = ({ navigation }) => {
         .then((result) => {
           if (result.statusCode === 200) {
             successToast({responseMessage: result.message});
-            navigation.navigate('Profile');
+            navigation.navigate('Goal');
             dispatch({ type: reduxAction.SET_ROLEID, payload: result.roleId });
             dispatch({ type: reduxAction.ADD_EMAIL_AFTER_LOGIN, payload: data.email });
             successToast({responseMessage: result.message});

@@ -77,6 +77,8 @@ const ProfileSetting = ({ navigation }) => {
     setIsEnabled({ ...isEnabled, [swithAgree]: !isEnabled[swithAgree] });
   };
 
+  const [customObj, setCustomObj] = useState([])
+
   const toggleCheckbox = () => {
     setChecked(!checked);
   };
@@ -85,8 +87,6 @@ const ProfileSetting = ({ navigation }) => {
 
   const roleId = useSelector((state) => state.roleId);
   const userDetails = useSelector((state) => state.userDetails || "");
-
-  console.log(userDetails?.state);
 
   const { getUserDetails } = useSettings(dispatch);
   const { successToast, errorToast } = useToast();
@@ -105,6 +105,7 @@ const ProfileSetting = ({ navigation }) => {
   const handleOnProviderSelect = () => {
     openProviderModal();
   };
+
 
   const INITIAL_FORM_STATE = (userDetails) => ({
     firstName: userDetails.firstName,
@@ -311,6 +312,8 @@ const ProfileSetting = ({ navigation }) => {
       return participantPayload;
     };
 
+    console.log(prepareBodyData());
+
     var requestOptions = {
       method: "POST",
       headers: myHeaders,
@@ -347,43 +350,42 @@ const ProfileSetting = ({ navigation }) => {
         aspect: [1, 1],
         quality: 1,
       });
-  
+
       if (!result.canceled) {
         const fileInfo = await FileSystem.getInfoAsync(result.assets[0].uri)
-      if (fileInfo.size >= 10240 && fileInfo.size <= 5242880) {
-        setImageUri(result.assets[0].uri);
-        let formData = new FormData();
-        formData.append("file", result.assets[0].uri);
-        dispatch({
-          type: reduxAction.USER_DATA,
-          payload: {
-            ...userDetails,
-            profilePic: imageUri,
-          },
-        });
-        try{
-          await fetch(`${HOST}:8080/api/userprofile/upload/` + userEmail, {
-          method: "POST",
-          body: formData,
-        });
-        }catch (error) {
-          console.log('err' , error);
+        if (fileInfo.size >= 10240 && fileInfo.size <= 5242880) {
+          setImageUri(result.assets[0].uri);
+          let formData = new FormData();
+          formData.append("file", result.assets[0].uri);
+          dispatch({
+            type: reduxAction.USER_DATA,
+            payload: {
+              ...userDetails,
+              profilePic: imageUri,
+            },
+          });
+          try {
+            await fetch(`${HOST}:8080/api/userprofile/upload/` + userEmail, {
+              method: "POST",
+              body: formData,
+            });
+          } catch (error) {
+            console.log('err', error);
+          }
+        } else {
+          alert('Image should be uploaded as JPG or PNG that between 10KB to 5MB in size!')
         }
-      }else{
-        alert('Image should be uploaded as JPG or PNG that between 10KB to 5MB in size!')
-      }}
+      }
     } catch (error) {
       console.error('Error picking an image: ', error);
     }
   };
 
-  useEffect(()=>{
-    if(userDetails.state){
+  useEffect(() => {
+    if (userDetails.state) {
       setStateSelectionValue(userDetails.state)
     }
-  },[userDetails.state])
-
-  console.log(userDetails);
+  }, [userDetails.state])
 
   useEffect(() => {
     (async () => {
@@ -410,7 +412,7 @@ const ProfileSetting = ({ navigation }) => {
   useEffect(() => {
     if (state.length > 0) {
       const arrayOfObjects = state?.map((value, index) => {
-        return {'value': value, 'label': value};
+        return { 'value': value, 'label': value };
       });
       arrayOfObjects && setStateData(arrayOfObjects);
     }
@@ -423,8 +425,7 @@ const ProfileSetting = ({ navigation }) => {
           return res.json();
         })
         .then((data) => {
-          console.log(data);
-          setAreaData(data.area);
+          setAreaData(data.area.map(area => ({ label: area.name, value: area.name, code: area.postalCode })));
         });
     }
   }, [stateSelectionValue]);
@@ -451,19 +452,27 @@ const ProfileSetting = ({ navigation }) => {
   };
 
   useEffect(() => {
+    fetch(`${HOST}:8080/api/ndis/providers`)
+      .then((res) => res.json())
+      .then((data) => {
+        setProvidersData(data?.providerNames?.map(value => ({ label: value.providerName, value: value.providerId })));
+      });
+  }, []);
+
+  useEffect(() => {
     getQuestions();
   }, []);
 
   return (
     <SafeAreaView style={styles.container} alignItems={"center"}>
-   {Object.keys(userDetails).length ? <ScrollView
+      {Object.keys(userDetails).length ? <ScrollView
         contentContainerStyle={{ flexGrow: 1 }}
         showsVerticalScrollIndicator={false}
         overScrollMode={Platform.OS === "android" ? "never" : "auto"}
       >
         <View style={styles.rowView}>
           <TouchableOpacity>
-          <Image source={imageUri ? { uri: imageUri } : { uri: userDetails.profilePic }} style={styles.profileImg} />
+            <Image source={imageUri ? { uri: imageUri } : { uri: userDetails.profilePic }} style={styles.profileImg} />
             <TouchableOpacity onPress={pickImage} style={styles.camera}>
               <MaterialCommunityIcons
                 name="camera"
@@ -481,7 +490,7 @@ const ProfileSetting = ({ navigation }) => {
         <Chips />
         <View style={styles.line}></View>
 
-         <View
+        <View
           style={{
             flex: 1,
             width: '100%'
@@ -616,13 +625,13 @@ const ProfileSetting = ({ navigation }) => {
                       editable={false}
                       onBlur={handleBlur("ndisNumber")}
                       onPress={(value) => {
-                        handleOnProviderSelect(value, setFieldValue);
+                        handleOnProviderSelect(value);
                       }}
                     />
                     <Text style={styles.errorTxt}>{errors.ndisNumber}</Text>
                     <TouchableOpacity
                       onPress={(value) => {
-                        handleOnProviderSelect(value, setFieldValue);
+                        handleOnProviderSelect(value);
                       }}
                       style={styles.arrow}
                     >
@@ -677,7 +686,13 @@ const ProfileSetting = ({ navigation }) => {
                               keyboardType="number-pad"
                             />
                             <View className="px-1">
-                              <CustomMultipleSelect />
+                              <CustomMultipleSelect
+                                data={providersData}
+                                onChange={(selectedItem) => {
+                                  setFieldValue("providers", selectedItem);
+                                }}
+                                initialvalue={values.providers}
+                              />
                             </View>
                             <View
                               style={[
@@ -740,7 +755,7 @@ const ProfileSetting = ({ navigation }) => {
                             style={[
                               styles.btnPrimary,
                               {
-                                width: width * 0.7,
+                                width: width * 0.9,
                                 alignSelf: "center",
                                 marginVertical: height * 0.02,
                               },
@@ -766,7 +781,7 @@ const ProfileSetting = ({ navigation }) => {
                       value={values.country}
                       data={[{ value: "Australia", label: "Australia" }]}
                       search={true}
-                      />
+                    />
                   </View>
                   {touched.country && errors.country && (
                     <Text className="text-red-500 font-popMedium text-right text-xs">
@@ -791,7 +806,7 @@ const ProfileSetting = ({ navigation }) => {
                   <View className="w-[96vw] mb-4">
                     <CustomSelect
                       title="State"
-                      initialValue={userDetails?.state || ''}
+                      initialValue={values.state}
                       value={values.state}
                       data={stateData}
                       search={true}
@@ -809,9 +824,8 @@ const ProfileSetting = ({ navigation }) => {
                   <View className="w-[96vw] pb-4">
                     <CustomSelect
                       title="Area"
-                      initialValue={userDetails?.areaSuburban || ''}
-                      value={values.areaSuburban}
-                      data={areaData.length ? areaData.map(area => ({label: area.name, value: area.name, code: area.postalCode})) : []}
+                      data={areaData.length ? areaData : []}
+                      initialValue={{ label: values.areaSuburban, value: values.areaSuburban }}
                       search={true}
                       onChange={(selectedArea) => {
                         handleChange("areaSuburban")(selectedArea.value);
@@ -885,7 +899,7 @@ const ProfileSetting = ({ navigation }) => {
               </View>
             )}
           </Formik>
-        </View> 
+        </View>
         <Modal
           animationType="slide"
           transparent={true}

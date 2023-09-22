@@ -1,1 +1,1 @@
-export const HOST = "http://uat.trackability.net.au";
+export const HOST = "http://dev.trackability.net.au";

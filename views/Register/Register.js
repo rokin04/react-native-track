@@ -6,7 +6,7 @@ import { HOST } from '../../utils/Host-URL';
 import { Formik } from 'formik';
 import { object, string, number } from 'yup';
 import * as Yup from "yup";
-import { DropDownCustom, Logo } from '../../components';
+import { Logo } from '../../components';
 import { Platform } from 'react-native';
 import styles from '../Login/login.style';
 import OtpModal from './OtpModal';

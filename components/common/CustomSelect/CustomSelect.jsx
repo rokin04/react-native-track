@@ -16,7 +16,6 @@ const CustomSelect = ({
   placeholder = "Select item",
   customStyles = {}
 }) => {
-  const userDetails = useSelector((state) => state.userDetails || "");
   const [value, setValue] = useState(initialValue);
 
   return (

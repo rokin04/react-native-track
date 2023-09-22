@@ -6,11 +6,14 @@
       "bundler": "metro"
     },
     "name": "trackability",
-    "slug": "trackability"
+    "slug": "trackability",
+    "extra": {
+      "eas": {
+        "projectId": "6c3433ec-1904-484a-9e55-dc3833c1a8d6"
+      }
+    },
+    "android": {
+      "package": "com.rokin.trackability"
+    }
   }
 }
-
-
-
-
-
